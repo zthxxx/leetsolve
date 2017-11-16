@@ -7,7 +7,7 @@ module.exports = [
     expect: 10.5
   },
   {
-    input: [[],[]],
+    input: [[], []],
     expect: 0
   },
   {
@@ -45,4 +45,4 @@ module.exports = [
     ],
     expect: 2.5
   }
-];
+]

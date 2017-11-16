@@ -13,11 +13,12 @@
   },
   "main": "test.js",
   "scripts": {
-    "test": "npm run lint && test.js",
-    "lint": "eslint"
+    "test": "cross-env NODE_ENV=test node --es_staging test",
+    "lint": "eslint --ext .js,.es6 problems"
   },
   "devDependencies": {
     "chalk": "^2.3.0",
+    "cross-env": "^5.1.1",
     "eslint": "^4.8.0",
     "eslint-config-alloy": "^1.2.1"
   },

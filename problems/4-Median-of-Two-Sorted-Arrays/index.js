@@ -5,16 +5,16 @@
  * @param {number[]} nums2
  * @return {number}
  */
-var findMedianSortedArrays = function(nums1, nums2) {
-    let merge = [...nums1, ...nums2].sort((a, b) => a - b);
-    if (!merge.length) return 0;
-    if (merge.length % 2) {
-        return merge[~~(merge.length / 2)];
-    } else {
-        let midRight = merge.length / 2;
-        return (merge[midRight - 1] + merge[midRight]) / 2;
-    }
-};
+let findMedianSortedArrays_sortfirst = function (nums1, nums2) {
+  let merge = [...nums1, ...nums2].sort((a, b) => a - b)
+  if (!merge.length) return 0
+  if (merge.length % 2) {
+    return merge[~~(merge.length / 2)]
+  } else {
+    let midRight = merge.length / 2
+    return (merge[midRight - 1] + merge[midRight]) / 2
+  }
+}
 
 
 /**
@@ -26,32 +26,32 @@ var findMedianSortedArrays = function(nums1, nums2) {
  * @param {number[]} nums2
  * @return {number}
  */
-var findMedianSortedArrays = function(nums1, nums2) {
-    let length = nums1.length + nums2.length;
-    if (!length) return 0;
-    let middleLeft = ~~(length / 2) - 1;
-    let lastIndex1 = nums1.length - 1;
-    let lastIndex2 = nums2.length - 1;
-    let i = -1;
-    let j = -1;
+let findMedianSortedArrays_twopoint = function (nums1, nums2) {
+  let length = nums1.length + nums2.length
+  if (!length) return 0
+  let middleLeft = ~~(length / 2) - 1
+  let lastIndex1 = nums1.length - 1
+  let lastIndex2 = nums2.length - 1
+  let i = -1
+  let j = -1
 
-    while (i + j + 1 < middleLeft) {
-        if (i < lastIndex1 && j < lastIndex2) {
-            if (nums1[i + 1] <= nums2[j + 1]) i++;
-            else j++
-        } else {
-            i = i < lastIndex1 ? middleLeft - 1 - j : i;
-            j = j < lastIndex2 ? middleLeft - 1 - i : j;
-        }
-    }
-    let minNext = Math.min(nums1[i + 1] || Infinity, nums2[j + 1] || Infinity);
-    if (length % 2) {
-        return minNext;
+  while (i + j + 1 < middleLeft) {
+    if (i < lastIndex1 && j < lastIndex2) {
+      if (nums1[i + 1] <= nums2[j + 1]) i++
+      else j++
     } else {
-        let middle = Math.max(nums1[i] || 0, nums2[j] || 0);
-        return (middle + minNext) / 2;
+      i = i < lastIndex1 ? middleLeft - 1 - j : i
+      j = j < lastIndex2 ? middleLeft - 1 - i : j
     }
-};
+  }
+  let minNext = Math.min(nums1[i + 1] || Infinity, nums2[j + 1] || Infinity)
+  if (length % 2) {
+    return minNext
+  } else {
+    let middle = Math.max(nums1[i] || 0, nums2[j] || 0)
+    return (middle + minNext) / 2
+  }
+}
 
 
 /**
@@ -74,34 +74,38 @@ var findMedianSortedArrays = function(nums1, nums2) {
  * @param {number[]} nums2
  * @return {number}
  */
-var findMedianSortedArrays = function(nums1, nums2) {
-    let n = nums1.length;
-    let m = nums2.length;
-    if (n > m) return findMedianSortedArrays(nums2, nums1);
-    let total = n + m;
-    if (!total) return 0;
-    let k = ~~((total - 1) / 2);
-    let low = -1;
-    let high = n;
-    while (low <= high) {
-        let cutL1 = Math.floor((high + low) / 2);
-        let cutR1 = cutL1 + 1;
-        let cutL2 = k - cutL1 - 1;
-        let cutR2 = cutL2 + 1;
+let findMedianSortedArrays = function (nums1, nums2) {
+  let n = nums1.length
+  let m = nums2.length
+  if (n > m) return findMedianSortedArrays(nums2, nums1)
+  let total = n + m
+  if (!total) return 0
+  let k = ~~((total - 1) / 2)
+  let low = -1
+  let high = n
+  while (low <= high) {
+    let cutL1 = Math.floor((high + low) / 2)
+    let cutR1 = cutL1 + 1
+    let cutL2 = k - cutL1 - 1
+    let cutR2 = cutL2 + 1
 
-        let L1 = cutL1 <= -1 ? -Infinity : nums1[cutL1];
-        let R1 = cutR1 >= n ? Infinity : nums1[cutR1];
-        let L2 = cutL2 <= -1 ? -Infinity : nums2[cutL2];
-        let R2 = cutR2 >= m ? Infinity : nums2[cutR2];
+    let L1 = cutL1 <= -1 ? -Infinity : nums1[cutL1]
+    let R1 = cutR1 >= n ? Infinity : nums1[cutR1]
+    let L2 = cutL2 <= -1 ? -Infinity : nums2[cutL2]
+    let R2 = cutR2 >= m ? Infinity : nums2[cutR2]
 
-        if (L1 > R2) high = cutL1;
-        else if (L2 > R1) low = cutR1;
-        else {
-            let left = Math.max(L1, L2);
-            let right = Math.min(R1, R2);
-            return total % 2 ? left : (left + right) / 2;
-        }
+    if (L1 > R2) { high = cutL1 }
+    else if (L2 > R1) { low = cutR1 }
+    else {
+      let left = Math.max(L1, L2)
+      let right = Math.min(R1, R2)
+      return total % 2 ? left : (left + right) / 2
     }
-};
+  }
+}
 
-module.exports = findMedianSortedArrays;
+module.exports = [
+  findMedianSortedArrays_sortfirst,
+  findMedianSortedArrays_twopoint,
+  findMedianSortedArrays
+]
