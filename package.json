@@ -1,0 +1,29 @@
+{
+  "name": "leetsolve",
+  "description": "zthxxx's LeetCode solutions with JavaScript",
+  "version": "0.1.0",
+  "author": {
+    "name": "zthxxx",
+    "email": "zth_9451@qq.com",
+    "url": "https://blog.zthxxx.me"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zthxxx/leetsolve.git"
+  },
+  "main": "test.js",
+  "scripts": {
+    "test": "npm run lint && test.js",
+    "lint": "eslint"
+  },
+  "devDependencies": {
+    "chalk": "^2.3.0",
+    "eslint": "^4.8.0",
+    "eslint-config-alloy": "^1.2.1"
+  },
+  "engines": {
+    "node": ">= 6.0.0",
+    "npm": ">= 3.0.0"
+  },
+  "license": "MIT"
+}
