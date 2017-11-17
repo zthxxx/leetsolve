@@ -13,10 +13,11 @@
   },
   "main": "test.js",
   "scripts": {
-    "test": "cross-env NODE_ENV=test node --es_staging test",
+    "test": "cross-env NODE_ENV=test node --harmony test",
     "lint": "eslint --ext .js,.es6 problems"
   },
   "devDependencies": {
+    "cac": "^4.2.4",
     "chalk": "^2.3.0",
     "cross-env": "^5.1.1",
     "eslint": "^4.8.0",

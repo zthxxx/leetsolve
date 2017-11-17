@@ -24,7 +24,7 @@ let run = function (fn, timeout = 2000) {
   } else {
     console.log(`工作进程 ${process.pid} ${fn.name} 已启动`)
     let result = fn()
-    process.send(result)
+    cluster.worker.send(result)
     process.exit(0)
   }
 }
