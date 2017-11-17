@@ -2,6 +2,7 @@
 // https://stackoverflow.com/questions/41735890/how-to-make-webstorm-format-code-according-to-eslint
 module.exports = {
   extends: [
+    // https://github.com/AlloyTeam/eslint-config-alloy/blob/master/index.js
     'eslint-config-alloy',
   ],
   parserOptions: {
@@ -35,6 +36,8 @@ module.exports = {
     'no-alert': 'error',
     // https://eslint.org/docs/rules/no-empty-function
     'no-empty-function': 'off',
+    // https://eslint.org/docs/rules/no-loop-func
+    'no-loop-func': 'off',
     // https://eslint.org/docs/rules/no-param-reassign
     'no-param-reassign': 'off',
     // https://eslint.org/docs/rules/no-unused-expressions

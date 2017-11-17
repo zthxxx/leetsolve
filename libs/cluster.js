@@ -6,17 +6,11 @@ let run = function (fn, timeout = 2000) {
     let worker = cluster.fork()
     let waiting = setTimeout(() => {
       console.log(`工作进程 ${worker.process.pid} 已超时`)
-      worker.disconnect()
-      worker.kill()
-      setTimeout(() => {
-        if (!worker.isDead()) {
-          worker.process.kill('SIGKILL')
-        }
-      }, 500)
+      worker.process.kill('SIGKILL')
     }, timeout)
     cluster.on('exit', (worker, code, signal) => {
       clearTimeout(waiting)
-      if (worker.exitedAfterDisconnect) {
+      if (!worker.exitedAfterDisconnect) {
         console.log(`工作进程 ${worker.process.pid} 失去同步`)
       }
     })
@@ -25,7 +19,8 @@ let run = function (fn, timeout = 2000) {
     console.log(`工作进程 ${process.pid} ${fn.name} 已启动`)
     let result = fn()
     cluster.worker.send(result)
-    process.exit(0)
+    cluster.worker.disconnect()
+    cluster.worker.kill()
   }
 }
 

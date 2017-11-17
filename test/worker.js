@@ -1,4 +1,5 @@
 const path = require('path')
+const cluster = require('cluster')
 const cli = require('cac')()
 
 const TEST_CASE = 'testcase.js'
@@ -21,19 +22,25 @@ cli.command('path', {
 
 cli.parse()
 
-function solve (problemPath, solvIndex, caseIndex) {
+function solve (problemPath, solvIndex, caseBase = 0) {
   let solution = require(problemPath)
   let testcases = require(path.join(problemPath, TEST_CASE))
   if (solution instanceof Array) solution = solution[solvIndex]
   if (!solution) throw new Error(`not have solution with this index #${solvIndex}`)
-  let casing = testcases[caseIndex]
-  if (!casing) throw new Error(`not have testcase with this index #${caseIndex}`)
-  let answer = solution(...casing.input)
-  let result = { result: answer }
-  if (process.send) {
-    process.send(result)
-  } else {
-    console.log(result)
+  if (caseBase) testcases = testcases.splice(caseBase)
+  for (let [caseIndex, { input }] of testcases.entries()) {
+    let answer = solution(...input)
+    let result = {
+      index: caseBase + caseIndex,
+      result: answer
+    }
+    if (cluster.isWorker) {
+      cluster.worker.send(result)
+    } else {
+      console.log(result)
+    }
   }
-  process.exit(0)
+  console.warn(`工作进程 ${process.pid} 正在退出`)
+  cluster.worker.disconnect()
+  cluster.worker.kill()
 }

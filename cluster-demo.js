@@ -9,5 +9,5 @@ function ask () {
   return { answer: 100 }
 }
 
-// run(loop)
-run(ask)
+run(loop)
+// run(ask)
