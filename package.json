@@ -1,7 +1,7 @@
 {
   "name": "leetsolve",
   "description": "zthxxx's LeetCode solutions with JavaScript",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "author": {
     "name": "zthxxx",
     "email": "zth_9451@qq.com",
@@ -14,7 +14,7 @@
   "scripts": {
     "lint": "eslint --ext .js,.es6 problems",
     "test": "cross-env NODE_ENV=test node --harmony test",
-    "style": "node test --config=./test/examples/config-unit.js"
+    "unit": "node test --config=./test/examples/config-unit.js"
   },
   "devDependencies": {
     "cac": "^4.2.4",

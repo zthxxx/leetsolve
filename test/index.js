@@ -99,12 +99,12 @@ class Leetsolve {
     let worker = this.workerFork()
     while (worker) {
       try {
-        let { result: answer, index, time } = await timelimit(worker)
+        let { answer, index, elapse } = await timelimit(worker)
         let { expect } = this.testcases[caseIndex]
         let error = this.getAssertError({ caseIndex, answer })
         caseIndex = index + 1
         assert.deepEqual(answer, expect, error.message)
-        console.warn('    ', green('√'), 'case', caseIndex, 'tested ok!', green(`${time} ms`))
+        console.warn('    ', green('√'), 'case', caseIndex, 'tested ok!', green(`${elapse} ms`))
       } catch (e) {
         if (!e) {
           worker = null
@@ -138,11 +138,11 @@ class Leetsolve {
   async run () {
     for (let problem of problems) {
       this.problem = problem
-      console.log(white('[problem]'), problem)
-
       let problemPath = path.join(problemBase, problem)
       this.problemPath = problemPath
       if (!fs.statSync(problemPath).isDirectory()) continue
+      
+      console.log(white('[problem]'), problem)
 
       let solutions = require(problemPath)
       this.testcases = require(path.join(problemPath, config.casefile))
@@ -153,8 +153,19 @@ class Leetsolve {
 
     if (this.errors.length) {
       console.error()
-      console.error('******** ERRORS ********')
+      console.error(
+        '      ', 
+        '****************** ERRORS ******************'
+      )
       for (let error of this.errors) console.error(error)
+      console.error(
+        '    ', 
+        '--------', 
+        `Total happened ${this.errors.length} errors!`, 
+        '--------'
+      )
+      console.error()
+      process.exit(1)
     }
   }
 }
