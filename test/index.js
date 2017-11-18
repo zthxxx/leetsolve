@@ -14,6 +14,7 @@ cli.option('config', {
   type: 'string',
   default: 'config.js'
 })
+
 const commad = cli.parse(null, { run: false })
 
 const pathBase = path.join(__dirname, '..')
@@ -24,19 +25,6 @@ const config = require(configFile)
 const problemBase = path.join(pathBase, config.problemBase)
 const problems = fs.readdirSync(problemBase)
 
-function forkSetup (problemPath, solvIndex, caseIndex) {
-  let args = [
-    'path', problemPath,
-    '--config', configFile,
-    '--solve', solvIndex
-  ]
-  if (caseIndex) args.push(...['--case', caseIndex])
-  cluster.setupMaster({
-    exec: path.join(__dirname, 'worker.js'),
-    args,
-    silent: !config.workerLog
-  })
-}
 
 function timelimit (worker, timeout = 2000) {
   return new Promise((resolve, reject) => {
@@ -55,60 +43,124 @@ function timelimit (worker, timeout = 2000) {
   })
 }
 
-async function leetsolve () {
-  let errors = []
-  for (let problem of problems) {
-    let problemPath = path.join(problemBase, problem)
-    if (!fs.statSync(problemPath).isDirectory()) continue
-    let solutions = require(problemPath)
-    let testcases = require(path.join(problemPath, config.casefile))
-    if (!(solutions instanceof Array)) solutions = [solutions]
-    console.log(white('[problem]'), problem)
+class Leetsolve {
+  constructor () {
+    this.problemPath = ''
+    this.problem = ''
+    this.solveName = ''
+    this.solvIndex = 0
+    this.caseIndex = 0
+    this.testcases = []
+    this.errors = []
+  }
+
+  forkSetup (problemPath, solvIndex, caseIndex) {
+    let args = [
+      'path', problemPath,
+      '--config', configFile,
+      '--solve', solvIndex
+    ]
+    if (caseIndex) args.push(...['--case', caseIndex])
+    cluster.setupMaster({
+      exec: path.join(__dirname, 'worker.js'),
+      args,
+      silent: !config.workerLog
+    })
+  }
+
+  workerFork (caseIndex = 0) {
+    this.forkSetup(this.problemPath, this.solvIndex, caseIndex)
+    let worker = cluster.fork()
+    return worker
+  }
+
+  getAssertError ({ caseIndex, answer }) {
+    let { input, expect } = this.testcases[caseIndex]
+    return new AssertException({
+      problem: this.problem,
+      solveName: this.solveName,
+      caseIndex: caseIndex + 1,
+      input, answer, expect
+    })
+  }
+
+  getTimeoutError ({ caseIndex }) {
+    let { input, expect } = this.testcases[caseIndex]
+    return new TimeoutException({
+      problem: this.problem,
+      solveName: this.solveName,
+      caseIndex: caseIndex + 1,
+      input, expect
+    })
+  }
+
+  async casesHandle () {
+    let caseIndex = 0
+    let worker = this.workerFork()
+    while (worker) {
+      try {
+        let { result: answer, index } = await timelimit(worker)
+        let { expect } = this.testcases[caseIndex]
+        let error = this.getAssertError({ caseIndex, answer })
+        caseIndex = index + 1
+        assert.deepEqual(answer, expect, error.message)
+        console.warn('    ', green('√'), 'case', caseIndex, 'tested ok!')
+      } catch (e) {
+        if (!e) {
+          worker = null
+          break
+        }
+        if (e instanceof assert.AssertionError) {
+          console.warn('    ', red('×'), 'case', caseIndex, 'not expect')
+          this.errors.push(e.message)
+        } else if (e instanceof TimeoutException) {
+          let timeout = this.getTimeoutError({ caseIndex })
+          this.errors.push(timeout.message)
+          caseIndex += 1
+          console.warn('    ', red('×'), 'case', caseIndex, 'timeout')
+          worker = this.workerFork(caseIndex)
+        }
+      }
+    }
+  }
+
+  async solutionsHandle (solutions) {
     for (let [solvIndex, solution] of solutions.entries()) {
       let solveName = solution.name || '[ANONYMOUS]'
       console.log('  ', '[solution]', solveName)
-      forkSetup(problemPath, solvIndex)
-      let worker = cluster.fork()
-      let caseIndex = -1
-      while (worker) {
-        try {
-          let { result: answer, index } = await timelimit(worker)
-          caseIndex = index
-          let { input, expect } = testcases[index]
-          let error = new AssertException({ problem, solveName, caseIndex, input, answer, expect })
-          assert.deepEqual(answer, expect, error.message)
-          console.warn('    ', green('√'), 'case', index + 1, 'tested ok!')
-        } catch (e) {
-          if (!e) {
-            worker = null
-            break
-          }
-          if (e instanceof assert.AssertionError) {
-            console.warn('    ', red('×'), 'case', caseIndex + 1, 'not expect')
-            errors.push(e.message)
-          } else if (e instanceof TimeoutException) {
-            caseIndex += 1
-            console.warn('    ', red('×'), 'case', caseIndex + 1, 'timeout')
-            let { input, expect } = testcases[caseIndex]
-            let timeout = new TimeoutException({ problem, solveName, caseIndex, input, expect })
-            errors.push(timeout.message)
-            forkSetup(problemPath, solvIndex, caseIndex + 1)
-            worker = cluster.fork()
-          }
-        }
-      }
+      this.solveName = solveName
+      this.solvIndex = solvIndex
+      await this.casesHandle()
       console.log()
     }
   }
-  if (errors.length) {
-    console.error()
-    console.error('******** ERRORS ********')
-    for (let error of errors) console.error(error)
+
+  async run () {
+    for (let problem of problems) {
+      this.problem = problem
+      console.log(white('[problem]'), problem)
+
+      let problemPath = path.join(problemBase, problem)
+      this.problemPath = problemPath
+      if (!fs.statSync(problemPath).isDirectory()) continue
+
+      let solutions = require(problemPath)
+      this.testcases = require(path.join(problemPath, config.casefile))
+      if (!(solutions instanceof Array)) solutions = [solutions]
+
+      await this.solutionsHandle(solutions)
+    }
+
+    if (this.errors.length) {
+      console.error()
+      console.error('******** ERRORS ********')
+      for (let error of this.errors) console.error(error)
+    }
   }
 }
 
-module.exports = leetsolve
+module.exports = Leetsolve
 
 if (cluster.isMaster) {
-  leetsolve()
+  new Leetsolve().run()
 }

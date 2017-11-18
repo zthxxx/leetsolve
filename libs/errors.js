@@ -6,7 +6,7 @@ class AssertException extends Error {
 
         Assert error at ${white.underline(problem)}:
           the solution ${solveName}
-          with ${green('#')}${green(caseIndex + 1)} input ${green(JSON.stringify(input))}
+          with ${green('#')}${green(caseIndex)} input ${green(JSON.stringify(input))}
           get answer ${green(JSON.stringify(answer))} , but expect ${green(JSON.stringify(expect))}
 
     `)
@@ -27,7 +27,7 @@ class TimeoutException extends Error {
 
       Timeout error at ${white.underline(problem)}:
         the solution ${solveName}
-        with ${green('#')}${green(caseIndex + 1)} input ${green(JSON.stringify(input))}
+        with ${green('#' + caseIndex)} input ${green(JSON.stringify(input))}
         expect ${green(JSON.stringify(expect))}, but execute timeout.
 
       `)

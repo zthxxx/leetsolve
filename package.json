@@ -7,6 +7,7 @@
     "email": "zth_9451@qq.com",
     "url": "https://blog.zthxxx.me"
   },
+  "main": "test/index.js",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/zthxxx/leetsolve.git"
