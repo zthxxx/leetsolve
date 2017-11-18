@@ -1,13 +1,12 @@
 {
   "name": "leetsolve",
   "description": "zthxxx's LeetCode solutions with JavaScript",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "author": {
     "name": "zthxxx",
     "email": "zth_9451@qq.com",
     "url": "https://blog.zthxxx.me"
   },
-  "main": "test/index.js",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/zthxxx/leetsolve.git"

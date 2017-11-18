@@ -99,12 +99,12 @@ class Leetsolve {
     let worker = this.workerFork()
     while (worker) {
       try {
-        let { result: answer, index } = await timelimit(worker)
+        let { result: answer, index, time } = await timelimit(worker)
         let { expect } = this.testcases[caseIndex]
         let error = this.getAssertError({ caseIndex, answer })
         caseIndex = index + 1
         assert.deepEqual(answer, expect, error.message)
-        console.warn('    ', green('√'), 'case', caseIndex, 'tested ok!')
+        console.warn('    ', green('√'), 'case', caseIndex, 'tested ok!', green(`${time} ms`))
       } catch (e) {
         if (!e) {
           worker = null
