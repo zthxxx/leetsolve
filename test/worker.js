@@ -2,14 +2,14 @@ const path = require('path')
 const cluster = require('cluster')
 const cli = require('cac')()
 
-const TEST_CASE = 'testcase.js'
-
-console.warn(`工作进程 ${process.pid} 已启动`)
+if (cluster.isMaster) { process.exit(1) }
 
 cli.command('path', {
   desc: 'problem path'
-}, (paths, flags) => {
-  solve(paths[0], flags.solve, flags.case)
+}).option('config', {
+  desc: 'config file path',
+  type: 'string',
+  default: '../config.js'
 }).option('solve', {
   desc: 'solution index',
   type: 'number',
@@ -20,11 +20,21 @@ cli.command('path', {
   default: 0
 })
 
-cli.parse()
+const commad = cli.parse(null, { run: false })
+
+let { config: configFile, solve: solvIndex, case: caseBase } = commad.flags
+const config = require(configFile)
+
+const log = (...msg) => { if (config.workerDebug) console.warn(...msg) }
+
+let problemPath = commad.input[0]
+solve(problemPath, solvIndex, caseBase)
+
+log(`工作进程 ${process.pid} 已启动`)
 
 function solve (problemPath, solvIndex, caseBase = 0) {
   let solution = require(problemPath)
-  let testcases = require(path.join(problemPath, TEST_CASE))
+  let testcases = require(path.join(problemPath, config.casefile))
   if (solution instanceof Array) solution = solution[solvIndex]
   if (!solution) throw new Error(`not have solution with this index #${solvIndex}`)
   if (caseBase) testcases = testcases.splice(caseBase)
@@ -37,10 +47,10 @@ function solve (problemPath, solvIndex, caseBase = 0) {
     if (cluster.isWorker) {
       cluster.worker.send(result)
     } else {
-      console.log(result)
+      log(result)
     }
   }
-  console.warn(`工作进程 ${process.pid} 正在退出`)
+  log(`工作进程 ${process.pid} 正在退出`)
   cluster.worker.disconnect()
   cluster.worker.kill()
 }

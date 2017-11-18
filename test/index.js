@@ -2,22 +2,39 @@ const fs = require('fs')
 const path = require('path')
 const assert = require('assert')
 const cluster = require('cluster')
+const cli = require('cac')()
 const { whiteBright: white, redBright: red, greenBright: green } = require('chalk')
+const {
+  AssertException,
+  TimeoutException
+} = require('../libs/errors')
 
-const TEST_CASE = 'testcase.js'
-const pathBase = path.join(__dirname, '..', 'problems')
-const problems = fs.readdirSync(pathBase)
+cli.option('config', {
+  desc: 'config file path',
+  type: 'string',
+  default: 'config.js'
+})
+const commad = cli.parse(null, { run: false })
+
+const pathBase = path.join(__dirname, '..')
+
+const configFile = path.join(pathBase, commad.flags.config)
+const config = require(configFile)
+
+const problemBase = path.join(pathBase, config.problemBase)
+const problems = fs.readdirSync(problemBase)
 
 function forkSetup (problemPath, solvIndex, caseIndex) {
   let args = [
     'path', problemPath,
+    '--config', configFile,
     '--solve', solvIndex
   ]
   if (caseIndex) args.push(...['--case', caseIndex])
   cluster.setupMaster({
     exec: path.join(__dirname, 'worker.js'),
     args,
-    silent: true
+    silent: !config.workerLog
   })
 }
 
@@ -25,7 +42,7 @@ function timelimit (worker, timeout = 2000) {
   return new Promise((resolve, reject) => {
     let waiting = setTimeout(() => {
       worker.process.kill('SIGKILL')
-      reject(new Error(red(`worker timeout ${timeout}ms`)))
+      reject(new TimeoutException({ timeout }))
     }, timeout)
     worker.on('message', result => {
       clearTimeout(waiting)
@@ -41,9 +58,10 @@ function timelimit (worker, timeout = 2000) {
 async function leetsolve () {
   let errors = []
   for (let problem of problems) {
-    let problemPath = path.join(pathBase, problem)
+    let problemPath = path.join(problemBase, problem)
+    if (!fs.statSync(problemPath).isDirectory()) continue
     let solutions = require(problemPath)
-    let testcases = require(path.join(problemPath, TEST_CASE))
+    let testcases = require(path.join(problemPath, config.casefile))
     if (!(solutions instanceof Array)) solutions = [solutions]
     console.log(white('[problem]'), problem)
     for (let [solvIndex, solution] of solutions.entries()) {
@@ -51,53 +69,42 @@ async function leetsolve () {
       console.log('  ', '[solution]', solveName)
       forkSetup(problemPath, solvIndex)
       let worker = cluster.fork()
-      let caseIndex = 0
+      let caseIndex = -1
       while (worker) {
         try {
           let { result: answer, index } = await timelimit(worker)
           caseIndex = index
           let { input, expect } = testcases[index]
-          let errMessage = red(`
-
-          Error at ${problem}:
-            the solution ${solveName}
-            with ${green('#' + (index + 1))} input ${green(JSON.stringify(input))}
-            get answer ${green(JSON.stringify(answer))} , but expect ${green(JSON.stringify(expect))}
-
-          `)
-
-          assert.deepEqual(answer, expect, errMessage)
+          let error = new AssertException({ problem, solveName, caseIndex, input, answer, expect })
+          assert.deepEqual(answer, expect, error.message)
           console.warn('    ', green('√'), 'case', index + 1, 'tested ok!')
         } catch (e) {
           if (!e) {
             worker = null
             break
           }
-          let { input, expect } = testcases[caseIndex]
-          let timeoutMessage = red(`
-
-          Error at ${problem}:
-            the solution ${solveName}
-            with ${green('#' + (caseIndex + 1))} input ${green(JSON.stringify(input))}
-            expect ${green(JSON.stringify(expect))}, but execute timeout.
-
-          `)
           if (e instanceof assert.AssertionError) {
             console.warn('    ', red('×'), 'case', caseIndex + 1, 'not expect')
             errors.push(e.message)
-          } else if (e instanceof Error) {
+          } else if (e instanceof TimeoutException) {
+            caseIndex += 1
             console.warn('    ', red('×'), 'case', caseIndex + 1, 'timeout')
-            errors.push(timeoutMessage)
+            let { input, expect } = testcases[caseIndex]
+            let timeout = new TimeoutException({ problem, solveName, caseIndex, input, expect })
+            errors.push(timeout.message)
+            forkSetup(problemPath, solvIndex, caseIndex + 1)
+            worker = cluster.fork()
           }
-          caseIndex += 1
-          forkSetup(problemPath, solvIndex, caseIndex)
-          worker = cluster.fork()
         }
       }
       console.log()
     }
   }
-  for (let error of errors) console.error(error)
+  if (errors.length) {
+    console.error()
+    console.error('******** ERRORS ********')
+    for (let error of errors) console.error(error)
+  }
 }
 
 module.exports = leetsolve
