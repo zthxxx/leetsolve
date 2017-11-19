@@ -1,15 +1,12 @@
 const path = require('path')
 const cluster = require('cluster')
 const cli = require('cac')()
+const { config } = require('../libs/configs')
 
 if (cluster.isMaster) { process.exit(1) }
 
 cli.command('path', {
   desc: 'problem path'
-}).option('config', {
-  desc: 'config file path',
-  type: 'string',
-  default: '../config.js'
 }).option('solve', {
   desc: 'solution index',
   type: 'number',
@@ -22,13 +19,12 @@ cli.command('path', {
 
 const commad = cli.parse(null, { run: false })
 
-let { config: configFile, solve: solvIndex, case: caseBase } = commad.flags
-const config = require(configFile)
-
-const log = (...msg) => { if (config.workerDebug) console.warn(...msg) }
+let { solve: solvIndex, case: caseBase } = commad.flags
 
 const problemPath = commad.input[0]
 const casefile = config.casefile
+
+const log = (...msg) => { if (config.workerDebug) console.warn(...msg) }
 
 log(`工作进程 ${process.pid} 已启动`)
 

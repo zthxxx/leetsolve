@@ -42,7 +42,26 @@ class TimeoutException extends Error {
   }
 }
 
+function showErrorStack (errors) {
+  if (errors.length) {
+    console.error()
+    console.error(
+      '      ',
+      '****************** ERRORS ******************'
+    )
+    for (let error of errors) console.error(error)
+    console.error(
+      '    ',
+      '--------',
+      `Total happened ${errors.length} errors!`,
+      '--------'
+    )
+    console.error()
+  }
+}
+
 module.exports = {
   AssertException,
-  TimeoutException
+  TimeoutException,
+  showErrorStack
 }
