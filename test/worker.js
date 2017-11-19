@@ -55,7 +55,7 @@ class Worker {
     this.testcases = require(path.join(problemPath, casefile))
     if (caseBase) this.testcases = this.testcases.slice(caseBase)
   }
-  
+
   registerHooks (solutions) {
     if (!(solutions instanceof Array)) return
     let { beforeEach, afterEach } = solutions
@@ -88,7 +88,17 @@ class Worker {
     if (before) hookBefore(before)
     if (after) hookAfter(after)
   }
-  
+
+  handleBefores (input) {
+    let dealInput = this.beforeEachs.reduce((inWare, hook) => hook(...inWare), input)
+    return this.befores.reduce((inWare, hook) => hook(...inWare), dealInput)
+  }
+
+  handleAfters (result) {
+    let dealResult = this.afters.reduce((outWare, hook) => hook(outWare), result)
+    return this.afterEachs.reduce((outWare, hook) => hook(outWare), dealResult)
+  }
+
   timerHook (fn, args) {
     let now = Date.now()
     let result = fn(...args)
@@ -96,16 +106,6 @@ class Worker {
     return [result, elapse]
   }
 
-  handleBefores (input) {
-    let dealInput = this.beforeEachs.reduce((inWare, hook) => hook(...inWare), input)
-    return this.befores.reduce((inWare, hook) => hook(...inWare), dealInput)
-  }
-  
-  handleAfters (result) {
-    let dealResult = this.afters.reduce((outWare, hook) => hook(outWare), result)
-    return this.afterEachs.reduce((outWare, hook) => hook(outWare), dealResult)
-  }
-  
   runSolve () {
     let { solution, testcases, timerHook } = this
     for (let [caseIndex, { input }] of testcases.entries()) {
@@ -123,7 +123,7 @@ class Worker {
       }
     }
   }
-  
+
   run () {
     this.runSolve()
     log(`工作进程 ${process.pid} 正在退出`)

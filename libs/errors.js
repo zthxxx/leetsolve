@@ -1,11 +1,11 @@
-const { whiteBright: white, redBright: red, greenBright: green } = require('chalk')
+const { whiteBright, white, redBright: red, greenBright: green } = require('chalk')
 
 class AssertException extends Error {
   constructor ({ problem, solveName, caseIndex, input, answer, expect }) {
     let message = red(`
 
-        Assert error at ${white.underline(problem)}:
-          the solution ${solveName}
+        Assert error at ${whiteBright.underline(problem)}:
+          the solution -- ${white(solveName)}
           with ${green('#')}${green(caseIndex)} input ${green(JSON.stringify(input))}
           get answer ${green(JSON.stringify(answer))} , but expect ${green(JSON.stringify(expect))}
 
@@ -25,8 +25,8 @@ class TimeoutException extends Error {
     if (problem && solveName) {
       message = red(`
 
-      Timeout error at ${white.underline(problem)}:
-        the solution ${solveName}
+      Timeout error at ${whiteBright.underline(problem)}:
+        the solution -- ${white(solveName)}
         with ${green('#' + caseIndex)} input ${green(JSON.stringify(input))}
         expect ${green(JSON.stringify(expect))}, but execute timeout.
 

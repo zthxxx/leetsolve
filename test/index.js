@@ -104,7 +104,7 @@ class Leetsolve {
         let error = this.getAssertError({ caseIndex, answer })
         caseIndex = index + 1
         assert.deepEqual(answer, expect, error.message)
-        console.warn('    ', green('√'), 'case', caseIndex, 'tested ok!', green(`${elapse} ms`))
+        console.warn('    ', green('√'), 'case', caseIndex, 'tested ok!', green(`(${elapse}ms)`))
       } catch (e) {
         if (!e) {
           worker = null
@@ -141,7 +141,7 @@ class Leetsolve {
       let problemPath = path.join(problemBase, problem)
       this.problemPath = problemPath
       if (!fs.statSync(problemPath).isDirectory()) continue
-      
+
       console.log(white('[problem]'), problem)
 
       let solutions = require(problemPath)
@@ -154,18 +154,18 @@ class Leetsolve {
     if (this.errors.length) {
       console.error()
       console.error(
-        '      ', 
+        '      ',
         '****************** ERRORS ******************'
       )
       for (let error of this.errors) console.error(error)
       console.error(
-        '    ', 
-        '--------', 
-        `Total happened ${this.errors.length} errors!`, 
+        '    ',
+        '--------',
+        `Total happened ${this.errors.length} errors!`,
         '--------'
       )
       console.error()
-      process.exit(1)
+      process.exitCode = 1
     }
   }
 }
