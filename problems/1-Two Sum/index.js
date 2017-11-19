@@ -14,3 +14,4 @@ let twoSum = function (nums, target) {
 }
 
 module.exports = twoSum
+require('../../libs/runhook')
