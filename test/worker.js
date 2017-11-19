@@ -128,7 +128,6 @@ class Worker {
     this.runSolve()
     log(`工作进程 ${process.pid} 正在退出`)
     cluster.worker.disconnect()
-    cluster.worker.kill()
   }
 }
 

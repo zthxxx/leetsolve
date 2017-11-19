@@ -32,11 +32,13 @@ function timelimit (worker, timeout = 2000) {
       worker.process.kill('SIGKILL')
       reject(new TimeoutException({ timeout }))
     }, timeout)
-    worker.on('message', result => {
+    worker.removeAllListeners('message')
+    worker.removeAllListeners('exit')
+    worker.once('message', result => {
       clearTimeout(waiting)
       resolve(result)
     })
-    worker.on('exit', () => {
+    worker.once('exit', () => {
       clearTimeout(waiting)
       if (worker.exitedAfterDisconnect) reject()
     })
