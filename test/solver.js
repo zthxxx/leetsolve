@@ -24,28 +24,8 @@ function forkSetup (problemPath, solvIndex, caseIndex) {
 }
 
 
-function timelimit (worker, timeout = 2000) {
-  return new Promise((resolve, reject) => {
-    let waiting = setTimeout(() => {
-      worker.process.kill('SIGKILL')
-      reject(new TimeoutException({ timeout }))
-    }, timeout)
-    worker.removeAllListeners('message')
-    worker.removeAllListeners('exit')
-    worker.once('message', result => {
-      clearTimeout(waiting)
-      resolve(result)
-    })
-    worker.once('exit', () => {
-      clearTimeout(waiting)
-      if (worker.exitedAfterDisconnect) reject()
-    })
-  })
-}
-
-
 class Solver {
-  constructor (problemPath, solutions, testcases, errors) {
+  constructor (problemPath, solutions, testcases, errors, timeout = 2000) {
     this.problemPath = problemPath
     this.problem = path.basename(problemPath)
     this.solutions = solutions
@@ -53,13 +33,14 @@ class Solver {
     this.solveName = ''
     this.solvIndex = 0
     this.caseIndex = 0
+    this.timeout = timeout
+    this.worker = null
     this.errors = errors
   }
 
   workerFork (caseIndex = 0) {
     forkSetup(this.problemPath, this.solvIndex, caseIndex)
-    let worker = cluster.fork()
-    return worker
+    return cluster.fork()
   }
 
   getAssertError ({ caseIndex, answer }) {
@@ -82,34 +63,57 @@ class Solver {
     })
   }
 
-  async casesHandle () {
-    let caseIndex = 0
-    let worker = this.workerFork()
-    while (worker) {
-      try {
-        let { answer, index, elapse } = await timelimit(worker)
-        let { expect } = this.testcases[caseIndex]
-        let error = this.getAssertError({ caseIndex, answer })
-        caseIndex = index + 1
-        assert.deepEqual(answer, expect, error.message)
-        console.warn('    ', green('√'), 'case', caseIndex, 'tested ok!', green(`(${elapse}ms)`))
-      } catch (e) {
-        if (!e) {
-          worker = null
-          break
+  consumer () {
+    let { worker } = this
+    let timelimit = () => setTimeout(
+      () => worker.process.kill('SIGKILL'),
+      this.timeout
+    )
+    let waiting = timelimit()
+
+    worker.on('message', result => {
+      clearTimeout(waiting)
+      waiting = timelimit()
+      this.onResult(result)
+    })
+
+    let state = new Promise(resolve => {
+      worker.on('exit', () => {
+        clearTimeout(waiting)
+        if (worker.exitedAfterDisconnect) {
+          this.worker = null
+        } else {
+          this.onTimeout()
+          this.worker = this.workerFork(this.caseIndex)
         }
-        if (e instanceof assert.AssertionError) {
-          console.warn('    ', red('×'), 'case', caseIndex, 'not expect')
-          this.errors.push(e.message)
-        } else if (e instanceof TimeoutException) {
-          let timeout = this.getTimeoutError({ caseIndex })
-          this.errors.push(timeout.message)
-          caseIndex += 1
-          console.warn('    ', red('×'), 'case', caseIndex, 'timeout')
-          worker = this.workerFork(caseIndex)
-        }
-      }
+        resolve()
+      })
+    })
+
+    worker.send('run')
+
+    return state
+  }
+
+  onResult (result) {
+    let { answer, index, elapse } = result
+    let { expect } = this.testcases[index]
+    let error = this.getAssertError({ caseIndex: index, answer })
+    this.caseIndex = index + 1
+    try {
+      assert.deepEqual(answer, expect, error.message)
+      console.warn('    ', green('√'), 'case', this.caseIndex, 'tested ok!', green(`(${elapse}ms)`))
+    } catch (e) {
+      console.warn('    ', red('×'), 'case', this.caseIndex, 'not expect', green(`(${elapse}ms)`))
+      this.errors.push(e.message)
     }
+  }
+
+  onTimeout () {
+    let timeout = this.getTimeoutError({ caseIndex: this.caseIndex })
+    this.errors.push(timeout.message)
+    this.caseIndex += 1
+    console.warn('    ', red('×'), 'case', this.caseIndex, 'timeout')
   }
 
   async solutionsHandle () {
@@ -119,8 +123,10 @@ class Solver {
       console.log('  ', '[solution]', solveName)
       this.solveName = solveName
       this.solvIndex = solvIndex
-      await this.casesHandle()
-      console.log()
+      this.worker = this.workerFork()
+      while (this.worker) {
+        await this.consumer()
+      }
     }
   }
 }

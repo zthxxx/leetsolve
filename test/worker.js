@@ -114,16 +114,16 @@ class Worker {
       }
       if (cluster.isWorker) {
         cluster.worker.send(result)
-      } else {
-        log(result)
       }
     }
   }
 
   run () {
-    this.runSolve()
-    log(`工作进程 ${process.pid} 正在退出`)
-    cluster.worker.disconnect()
+    process.on('message', message => {
+      if (message === 'run') this.runSolve()
+      log(`工作进程 ${process.pid} 正在退出`)
+      cluster.worker.disconnect()
+    })
   }
 }
 
