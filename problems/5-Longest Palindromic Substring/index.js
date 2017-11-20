@@ -1,0 +1,97 @@
+require('../../libs/runDirect')
+
+/**
+ * 判断字符串是否是回文
+ * 前后同时遍历，O(n)
+ * @param {string} s
+ * @returns {boolean}
+ */
+function palindromic (s) {
+  let i = 0
+  let j = s.length - 1
+  if (i === j) return true
+  while (j > i) {
+    if (s[i] === s[j]) {
+      if (++i === j) return true
+      if (--j === i) return true
+    } else {
+      return false
+    }
+  }
+  return false
+}
+
+/**
+ * 暴力来回扫，因为从两侧都要遍历，所以是 O(n^3)
+ * 从第一个字符开始遍历 [O(n)]，
+ * 依次判断从当前字符到从末尾向前遍历 [O(n)] 的字符串是否是回文 [O(n)]
+ * 是则再比较最大长度，然后更新最长回文
+ * @param {string} s
+ * @return {string}
+ */
+let longestPalindrome_force = function (s) {
+  if (!s.length) return ''
+  let i = 0
+  let j = s.length
+  let maxSub = ''
+  while (i < s.length - maxSub.length) {
+    j = s.length
+    while (j - i > maxSub.length) {
+      let sub = s.slice(i, j)
+      let is = palindromic(sub)
+      if (is) {
+        maxSub = sub
+      }
+      j -= 1
+    }
+    i += 1
+  }
+  return maxSub
+}
+
+/**
+ * 探测当前左右节点开始的最长回文端点
+ * @param {string} s
+ * @param {number} left
+ * @param {number} right
+ * @returns {[number,number]} left, right
+ */
+function explorePalindrome (s, left, right) {
+  if (s[left] !== s[right]) return [left, left]
+  while (left > 0 && right < s.length - 1) {
+    if (s[left - 1] !== s[right + 1]) break
+    left -= 1
+    right += 1
+  }
+  return [left, right]
+}
+
+/**
+ * 朴素算法，O(n^2)
+ * 以一个字符作为中心向两边扩展判断
+ * 区分单个字符作为中心和两个字符作为中心
+ * @param s
+ * @returns {string}
+ */
+let longestPalindrome_naive = function (s) {
+  if (!s.length) return ''
+  let i = 0
+  let maxSub = ''
+  while (i < s.length - ~~(maxSub.length / 2)) {
+    let [l1, r1] = explorePalindrome(s, i, i)
+    let [l2, r2] = explorePalindrome(s, i, i + 1)
+    if (r2 - l2 > r1 - l1) {
+      [l1, r1] = [l2, r2]
+    }
+    if (r1 - l1 + 1 > maxSub.length) {
+      maxSub = s.slice(l1, r1 + 1)
+    }
+    i += 1
+  }
+  return maxSub
+}
+
+module.exports = [
+  longestPalindrome_force,
+  longestPalindrome_naive
+]

@@ -11,13 +11,15 @@
 
 - easy to describe a problem and testcase
 
-- lightweight testing frame which a bit like mocha
+- lightweight testing frame which a bit like mocha, but more features which are mocha NOT support
+
+- direct to run a single problem solution for test
 
 - using **multiprocessing**, speed up testcase
 
 - canable to stop timeout testing with **infinite loop** (which mocha NOT support)
 
-- also support hooks `beforEach` `before` `after` `afterEach`
+- also support hooks like `beforEach` `before` `after` `afterEach`
 
 - output reporters style adjust to like mocha spec
 
@@ -49,6 +51,9 @@ problems/
    ├─ index.js            # solution file
    └─ testcase.js         # problem testcase file
 ```
+
+you may want direct run a solution file for test, only ensure **require** this hook **`libs/runDirect.js`**
+
 
 ### configure
 

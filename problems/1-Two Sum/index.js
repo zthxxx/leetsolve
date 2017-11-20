@@ -1,3 +1,5 @@
+require('../../libs/runDirect')
+
 /**
  * @param {number[]} nums
  * @param {number} target
@@ -14,4 +16,3 @@ let twoSum = function (nums, target) {
 }
 
 module.exports = twoSum
-require('../../libs/runDirect')

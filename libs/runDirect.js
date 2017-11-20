@@ -32,4 +32,4 @@ async function run () {
   }
 }
 
-if (isLoadDirectly) run()
+if (isLoadDirectly) process.nextTick(run)
