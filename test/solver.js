@@ -1,11 +1,11 @@
 const path = require('path')
 const assert = require('assert')
 const cluster = require('cluster')
-const { redBright: red, greenBright: green } = require('chalk')
 const {
   AssertException,
   TimeoutException
 } = require('../libs/errors')
+const { redBright: red, greenBright: green } = require('chalk')
 const { config, configName } = require('../libs/configs')
 
 
@@ -104,7 +104,7 @@ class Solver {
       assert.deepEqual(answer, expect, error.message)
       console.warn('    ', green('√'), 'case', this.caseIndex, 'tested ok!', green(`(${elapse}ms)`))
     } catch (e) {
-      console.warn('    ', red('×'), 'case', this.caseIndex, 'not expect', green(`(${elapse}ms)`))
+      console.warn('    ', red('×'), 'case', this.caseIndex, 'not expect', red(`(${elapse}ms)`))
       this.errors.push(e.message)
     }
   }

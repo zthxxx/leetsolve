@@ -1,8 +1,8 @@
 const fs = require('fs')
 const path = require('path')
 const cluster = require('cluster')
-const { whiteBright: white } = require('chalk')
 const { showErrorStack } = require('../libs/errors')
+const { whiteBright: white } = require('chalk')
 const { config } = require('../libs/configs')
 const Solver = require('./solver')
 

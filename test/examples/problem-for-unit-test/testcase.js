@@ -4,19 +4,11 @@ module.exports = [
     expect: true
   },
   {
-    input: [true, 3],
+    input: [true, 2],
     expect: false
   },
   {
-    input: [false, 4],
-    expect: false
-  },
-  {
-    input: [true, 5],
-    expect: true
-  },
-  {
-    input: [false, 6],
+    input: [false, 3],
     expect: true
   }
 ]

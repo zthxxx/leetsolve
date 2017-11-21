@@ -58,7 +58,7 @@ let longestPalindrome_force = function (s) {
  * @param {number} right
  * @returns {[number,number]} left, right
  */
-function explorePalindrome (s, left, right) {
+function detectPalindrome (s, left, right) {
   if (s[left] !== s[right]) return [left + 1, right - 1]
   while (left > 0 && right < s.length - 1) {
     if (s[left - 1] !== s[right + 1]) break
@@ -81,7 +81,7 @@ let longestPalindrome_naive = function (s) {
   let j = 0
   let maxSub = ''
   while (j < s.length - ~~(maxSub.length / 2)) {
-    let [left, right] = explorePalindrome(s, i, j)
+    let [left, right] = detectPalindrome(s, i, j)
     if (right - left + 1 > maxSub.length) {
       maxSub = s.slice(left, right + 1)
     }
@@ -115,7 +115,7 @@ let longestPalindrome_Manacher = function (s) {
     let rstart = Math.min(radius[j] + i, maxRight)
     rstart = Math.max(rstart, i)
     let lstart = 2 * i - rstart
-    let [, right] = explorePalindrome(fill, lstart, rstart)
+    let [, right] = detectPalindrome(fill, lstart, rstart)
     radius[i] = right - i
     if (right > maxRight) {
       maxRight = right
