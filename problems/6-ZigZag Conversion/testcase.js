@@ -1,0 +1,21 @@
+module.exports = [
+  {
+    input: ['PAYPALISHIRING', 3],
+    expect: 'PAHNAPLSIIGYIR'
+  },
+  {
+    input: ['', 1],
+    expect: ''
+  },
+  {
+    input: ['0123456789', 4],
+    expect: '0615724839'
+  },
+  {
+    input: [
+      'nywxjowtmvluoyijcuskwwgabuoqtaqgyodkcbdpyojmntxropeknkkqhagacyidnnnprqepgqevjbnxttjgfwxmwdozcyepmrgfhnundyjmcymvtxbytalqebriavxoodtvqnkvovksvwnovqnprahvbyfbvcpjhkgaysxoqhgnfvcblrqctxzuxeyuipdsalsafroxzwlerphcgxhzwivtntnxlspnfjnlbdkczvgqkouqnbrkknfzityvnqitzvgcyqezmnpydkrsniczxiyidzdspolqjttkmzjaobyrnpkaaoazyahdznwobjhmdaypbkpqlnjyftafkagkdoocdktgtasyctnddcvosfozaogkrmvuclyfvrlqtgpvzebchwsbbgacwionulhxwgctzqktwbqvfrzoqrrrztvvbmlwxstwaxpcnbxlcngkhhyxaqqzlovnagjzacvdznhpoeattjfcqdbrvsshgpwixfhajffksmzisadlliqboruljpureqbcxlcgqhrkvqunsaadiqhyidmtsgnxzobwbfdrowdjmayhaymiptjzzvurdhqeytbzygtocwxqwvxwukhlfsmgpgyuoqzmmcnkigzkdycbwaasmjdtdpasxamlslzennrxt',
+      553
+    ],
+    expect: 'nywxjowtmvluoyijcuskwwgabuoqtaqgyodkcbdpyojmntxropeknkkqhagacyidnnnprqepgqevjbnxttjgfwxmwdozcyepmrgfhnundyjmcymvtxbytalqebriavxoodtvqnkvovksvwnovqnprahvbyfbvcpjhkgaysxoqhgnfvcblrqctxzuxeyuipdsalsafroxzwlerphcgxhzwivtntnxlspnfjnlbdkczvgqkouqnbrkknfzityvnqitzvgcyqezmnpydkrsniczxiyidzdspolqjttkmzjaobyrnpkaaoazyahdznwobjhmdaypbkpqlnjyftafkagkdoocdktgtasyctnddcvosfozaogkrmvuclyfvrlqtgpvzebchwsbbgacwionulhxwgctzqktwbqvfrzoqrrrztvvbmlwxstwaxpcnbxlcngkhhyxatqxqrznlnoevznlasgljmzaaxcsvadpzdnthdpjomesaatatwjbfccyqddkbzrgvisksnhcgmpmwziqxofuhyagjpfgfmkssfmlzhiksuawdxlvlwiqqxbwocroutlgjypzubrteyqebqchxdlrcugvqzhzrjktvpqiumnysaahaydaimqjhdywiodrmdtfsbgwnbxoz'
+  }
+]
