@@ -4,17 +4,17 @@ chalk.level = 3
 const { whiteBright, white, redBright: red, greenBright: green } = chalk
 
 
-class AssertException extends Error {
+class WrongAnswerException extends Error {
   constructor ({ problem, solveName, caseIndex, input, answer, expect }) {
     let message = red(`
-        Assert error at ${whiteBright.underline(problem)}:
+        Wrong Answer at ${whiteBright.underline(problem)}:
           the solution -- ${white(solveName)}
           with ${green('#')}${green(caseIndex)} input ${green(JSON.stringify(input))}
           get answer ${green(JSON.stringify(answer))} , but expect ${green(JSON.stringify(expect))}
 
     `)
     super(message)
-    this.name = 'AssertException'
+    this.name = 'WrongAnswerException'
   }
 
   toJSON () {
@@ -22,21 +22,34 @@ class AssertException extends Error {
   }
 }
 
-class TimeoutException extends Error {
+class TimeLimitException extends Error {
   constructor ({ problem, solveName, caseIndex, input, expect, timeout }) {
-    let message = ''
-    if (problem && solveName) {
-      message = red(`
-        Timeout error at ${whiteBright.underline(problem)}:
+    let message = red(`
+        Time Limit Exceeded at ${whiteBright.underline(problem)}:
           the solution -- ${white(solveName)}
           with ${green('#' + caseIndex)} input ${green(JSON.stringify(input))}
           expect ${green(JSON.stringify(expect))}, but execute timeout.
 
-      `)
-    }
+    `)
     super(message)
-    this.name = 'TimeoutException'
+    this.name = 'TimeLimitException'
     this.timeout = timeout
+  }
+
+  toJSON () {
+    return this.message
+  }
+}
+
+class CompileException extends Error {
+  constructor ({ problem, stack }) {
+    let message = red(`
+        Compile Error at ${whiteBright.underline(problem)}:
+        ${white(stack.replace(/\n/g, '\n        '))}
+
+    `)
+    super(message)
+    this.name = 'CompileErrorException'
   }
 
   toJSON () {
@@ -50,14 +63,14 @@ function showErrorStack (errors) {
     console.error()
     console.error(
       '      ',
-      '****************** ERRORS ******************'
+      whiteBright('****************** ERRORS ******************')
     )
     console.error()
     for (let error of errors) console.error(error)
     console.error(
       '      ',
       '---------',
-      `Total happened ${errors.length} errors!`,
+      whiteBright(`Total happened ${errors.length} errors!`),
       '---------'
     )
     console.error()
@@ -65,7 +78,8 @@ function showErrorStack (errors) {
 }
 
 module.exports = {
-  AssertException,
-  TimeoutException,
+  WrongAnswerException,
+  TimeLimitException,
+  CompileException,
   showErrorStack
 }

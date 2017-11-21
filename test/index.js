@@ -1,8 +1,8 @@
 const fs = require('fs')
 const path = require('path')
 const cluster = require('cluster')
-const { showErrorStack } = require('../libs/errors')
-const { whiteBright: white } = require('chalk')
+const { CompileException, showErrorStack } = require('../libs/errors')
+const { whiteBright: white, redBright: red } = require('chalk')
 const { config } = require('../libs/configs')
 const Solver = require('./solver')
 
@@ -10,6 +10,7 @@ const Solver = require('./solver')
 const pathBase = path.join(__dirname, '..')
 const problemBase = path.join(pathBase, config.problemBase)
 const problems = fs.readdirSync(problemBase)
+
 
 class Leetsolve {
   constructor () {
@@ -20,13 +21,25 @@ class Leetsolve {
     for (let problem of problems) {
       let problemPath = path.join(problemBase, problem)
       if (!fs.statSync(problemPath).isDirectory()) continue
+      console.log()
+      console.log(white('[problem]'), white(problem))
 
-      console.log(white('[problem]'), problem)
+      let solutions = null
+      let testcases = null
+      try {
+        solutions = require(problemPath)
+        testcases = require(path.join(problemPath, config.casefile))
+      } catch (e) {
+        if (e instanceof SyntaxError) {
+          let error = new CompileException({ problem, stack: e.stack })
+          this.errors.push(error.message)
+          console.warn('    ', red('×'), 'solutions Compile Error')
+          continue
+        }
+        throw e
+      }
 
-      let solutions = require(problemPath)
-      let testcases = require(path.join(problemPath, config.casefile))
       if (!(solutions instanceof Array)) solutions = [solutions]
-
       let solver = new Solver(problemPath, solutions, testcases, this.errors)
       await solver.solutionsHandle()
     }

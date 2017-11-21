@@ -2,8 +2,8 @@ const path = require('path')
 const assert = require('assert')
 const cluster = require('cluster')
 const {
-  AssertException,
-  TimeoutException
+  WrongAnswerException,
+  TimeLimitException
 } = require('../libs/errors')
 const { redBright: red, greenBright: green } = require('chalk')
 const { config, configName } = require('../libs/configs')
@@ -45,7 +45,7 @@ class Solver {
 
   getAssertError ({ caseIndex, answer }) {
     let { input, expect } = this.testcases[caseIndex]
-    return new AssertException({
+    return new WrongAnswerException({
       problem: this.problem,
       solveName: this.solveName,
       caseIndex: caseIndex + 1,
@@ -55,7 +55,7 @@ class Solver {
 
   getTimeoutError ({ caseIndex }) {
     let { input, expect } = this.testcases[caseIndex]
-    return new TimeoutException({
+    return new TimeLimitException({
       problem: this.problem,
       solveName: this.solveName,
       caseIndex: caseIndex + 1,
