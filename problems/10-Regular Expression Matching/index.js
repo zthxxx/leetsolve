@@ -35,6 +35,7 @@ function inturnMatch (s, p) {
 
 /**
  * 把匹配字符串根据 `*` 切割成匹配栈
+ * 匹配栈的每一项要么是固定长元素，要么是两个字符的 `x*`
  * @param p
  * @returns {Array}
  */
@@ -50,7 +51,22 @@ function patternStack (p) {
   return stack.map(item => item.join(''))
 }
 
-function matchCore (s, stack) {
+/**
+ * 根据模式栈匹配字符串
+ * 对于匹配模式为固定项的，直接匹配，然后字符串和匹配模式都进入下一项
+ * 对于不定长模式，确认下退出条件然后按字符顺序试探是否要进入下一个模式
+ * 如果字符串已经耗尽了，不定长项是最后一项，那么匹配成功，
+ * 如果不是最后一项，那么依次试探下一项是不是不定长项
+ * 如果匹配项不定长，但又不是 `.*` 的任意匹配，那么第一个字符一定是个
+ * 给定的匹配字符，如果不定长项的匹配字符和当前字符串位置的字符不一样
+ * 那么应该依次试探下一个匹配模式
+ * 应为遇到不定长项时会连续重复的试探是否进入下一项，
+ * 导致总的时间复杂度为 O(n^2)
+ * @param {string} s
+ * @param {string[]} stack
+ * @returns {boolean}
+ */
+function matchStackCore (s, stack) {
   let i = 0
   let j = 0
   while (j < stack.length) {
@@ -61,7 +77,7 @@ function matchCore (s, stack) {
       i += pattern.length
     } else {
       if (i >= s.length) {
-        if (j === stack.length - 1) return true
+        if (j === stack.length - 1) { return true }
         else {
           j += 1
           continue
@@ -71,8 +87,8 @@ function matchCore (s, stack) {
         j += 1
         continue
       }
-      return matchCore(s.slice(i), stack.slice(j + 1)) ||
-        matchCore(s.slice(i + 1), stack.slice(j))
+      return matchStackCore(s.slice(i), stack.slice(j + 1)) ||
+        matchStackCore(s.slice(i + 1), stack.slice(j))
     }
     j += 1
     if (i === s.length && j === stack.length) return true
@@ -85,21 +101,58 @@ function matchCore (s, stack) {
  * 只有 `*` 不是单个字符操作
  * 以 `*` 和 `*` 前一个字符为分割点，
  * 分割匹配模式串（如果 `*` 前是 `*`，那么模式不合格）
+ * 为定长项和不定长项
  * abc*b.c -> [ab, c*, b.c]
  * 只有包含 `*` 的组不定长，其余均定长
+ * 再依次匹配各个模式
+ * 遇到不定长项时试探是否进入下一项
  * @param {string} s
  * @param {string} p
  * @return {boolean}
  */
-let isMatch = function (s, p) {
+let isMatch_stack = function (s, p) {
   if (!s.length && !p.length) return true
   if (p.includes('**')) return false
   let stack = patternStack(p)
-  return matchCore(s, stack)
+  return matchStackCore(s, stack)
 }
 
+/**
+ * 和用模式栈的思想一致，只是变成逐字判断
+ * 写法简洁一点
+ * @param {string} s
+ * @param {string} p
+ * @returns {boolean}
+ */
+function matchCore (s, p) {
+  let i = 0
+  let j = 0
+  while (j < p.length) {
+    if (p[j + 1] !== '*') {
+      if (p[j] !== s[i] && (p[j] !== '.' || !s[i])) return false
+      i++
+      j++
+    } else {
+      if (i >= s.length) return matchCore(s.slice(i), p.slice(j + 2))
+      if (p[j] === s[i] || p[j] === '.' && s[i]) {
+        return matchCore(s.slice(i), p.slice(j + 2)) ||
+          matchCore(s.slice(i + 1), p.slice(j))
+      }
+      return matchCore(s.slice(i), p.slice(j + 2))
+    }
+  }
+  return i >= s.length
+}
+
+let isMatch = function (s, p) {
+  if (!s.length && !p.length) return true
+  return matchCore(s, p)
+}
+
+
 module.exports = [
-  // isMatch_naive,
+  isMatch_naive,
+  isMatch_stack,
   isMatch
 ]
 

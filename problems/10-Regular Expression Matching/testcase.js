@@ -52,6 +52,10 @@ module.exports = [
     expect: true
   },
   {
+    input: ['a', '.*..a*'],
+    expect: false
+  },
+  {
     input: ['abcd', 'd*'],
     expect: false
   },
