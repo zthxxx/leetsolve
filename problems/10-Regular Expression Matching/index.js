@@ -118,8 +118,10 @@ let isMatch_stack = function (s, p) {
 }
 
 /**
+ * 回溯法
  * 和用模式栈的思想一致，只是变成逐字判断
  * 写法简洁一点
+ * 时间复杂度为 O(n^2)
  * @param {string} s
  * @param {string} p
  * @returns {boolean}
@@ -144,16 +146,55 @@ function matchCore (s, p) {
   return i >= s.length
 }
 
-let isMatch = function (s, p) {
+let isMatch_backtracking = function (s, p) {
   if (!s.length && !p.length) return true
   return matchCore(s, p)
 }
 
+/**
+ * 动态规划法
+ * https://discuss.leetcode.com/topic/17852/9-lines-16ms-c-dp-solutions-with-explanations
+ * 核型是建立一个 dp[n][m] 的 boolean 矩阵
+ * 用 dp[i][j] 表示从 p[0,j) 是否匹配 s[0, i)
+ * 两层遍历，复杂度 O(n x m)
+ * @param {string} s
+ * @param {string} p
+ * @returns {boolean}
+ */
+let isMatch_DP = function (s, p) {
+  let dp = [...new Array(s.length + 1)].map(
+    () => new Array(p.length + 1).fill(false)
+  )
+  dp[0][0] = true
+  let i = 0
+  let j = 1
+  while (i <= s.length) {
+    j = 1
+    while (j <= p.length) {
+      if (p[j - 1] !== '*') {
+        if (i > 0) {
+          if (p[j - 1] === s[i - 1] || p[j - 1] === '.') dp[i][j] = dp[i - 1][j - 1]
+        }
+      } else {
+        if (dp[i][j - 2]) {
+          dp[i][j] = true
+        }
+        else if (i > 0) {
+          if (p[j - 2] === s[i - 1] || p[j - 2] === '.') dp[i][j] = dp[i - 1][j]
+        }
+      }
+      j++
+    }
+    i++
+  }
+  return dp[s.length][p.length]
+}
 
 module.exports = [
   isMatch_naive,
   isMatch_stack,
-  isMatch
+  isMatch_backtracking,
+  isMatch_DP
 ]
 
 require('../../libs/runDirect')
