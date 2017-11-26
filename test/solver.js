@@ -29,6 +29,7 @@ class Solver {
     this.problemPath = problemPath
     this.problem = path.basename(problemPath)
     this.solutions = solutions
+    this.solution = null
     this.testcases = testcases
     this.solveName = ''
     this.solvIndex = 0
@@ -65,9 +66,10 @@ class Solver {
 
   consumer () {
     let { worker } = this
+    let timeout = this.solution.timeout || this.solutions.timeout || this.timeout
     let timelimit = () => setTimeout(
       () => worker.process.kill('SIGKILL'),
-      this.timeout
+      timeout
     )
     let waiting = timelimit()
 
@@ -121,6 +123,7 @@ class Solver {
     for (let [solvIndex, solution] of solutions.entries()) {
       let solveName = solution.name || '[ANONYMOUS]'
       console.log('  ', '[solution]', solveName)
+      this.solution = solution
       this.solveName = solveName
       this.solvIndex = solvIndex
       this.worker = this.workerFork()

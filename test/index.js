@@ -38,9 +38,8 @@ class Leetsolve {
         }
         throw e
       }
-
       if (!(solutions instanceof Array)) solutions = [solutions]
-      let solver = new Solver(problemPath, solutions, testcases, this.errors)
+      let solver = new Solver(problemPath, solutions, testcases, this.errors, config.timeout)
       await solver.solutionsHandle()
     }
 

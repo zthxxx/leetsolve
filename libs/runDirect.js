@@ -1,5 +1,6 @@
 const path = require('path')
 const { whiteBright: white } = require('chalk')
+const { config } = require('./configs')
 const { showErrorStack } = require('./errors')
 const Solver = require('../test/solver')
 
@@ -15,8 +16,7 @@ function loadProblem () {
     solutions = require(problemPath)
   }
   if (!Array.isArray(solutions)) solutions = [solutions]
-
-  let casePath = path.join(problemPath, 'testcase.js')
+  let casePath = path.join(problemPath, config.casefile)
   let testcases = require(casePath)
   return [problemPath, solutions, testcases]
 }
@@ -24,7 +24,7 @@ function loadProblem () {
 async function run () {
   let errors = []
   let injection = loadProblem()
-  let solver = new Solver(...injection, errors)
+  let solver = new Solver(...injection, errors, config.timeout)
   await solver.solutionsHandle()
   if (errors.length) {
     showErrorStack(errors)

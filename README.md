@@ -132,6 +132,10 @@ solution1.before = () => {}
 solution2.after = [() => {}, () => {}]
 ```
 
+**timeout setting hook**
+
+support to set different timelimit to specific problem or solution. By ues `timeout` property as lifecycle hooks.
+
 **direct running hook**
 
 you may want to direct run a solution file for test as `node ./problem-1/index.js` or `node ./problem-1`
@@ -142,7 +146,6 @@ all right, only ensure `index.js`  **require** this hook module **`libs/runDirec
 // problems/problem-for-unit-test/index.js
 require('../../libs/runDirect')
 ```
-
 
 ### configure
 

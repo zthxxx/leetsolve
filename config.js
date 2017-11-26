@@ -10,6 +10,11 @@ module.exports = {
   casefile: 'testcase.js',
 
   /**
+   * set time limit to run per solution
+   */
+  timeout: 2000,
+
+  /**
    * whether or not to allow worker output stdio
    */
   workerLog: true,
