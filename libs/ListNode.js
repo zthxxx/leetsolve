@@ -10,7 +10,6 @@ class ListNode {
   constructor (val) {
     this.val = val
     this.next = null
-    this.count = 0
   }
 
   static generate (array) {
