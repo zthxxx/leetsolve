@@ -24,6 +24,6 @@ let swapPairs = function (head) {
 
 module.exports = swapPairs
 
-swapPairs.before = list => [ListNode.generate(list)]
+swapPairs.before = list => [ListNode.gen(list)]
 
 swapPairs.after = [result => result || [], result => [...result]]

@@ -27,7 +27,7 @@ function addNode (pl1, pl2, carry = 0) {
   return [~~(sum / 10), new ListNode(sum % 10)]
 }
 
-addTwoNumbers.before = (...args) => args.map(ListNode.generate)
+addTwoNumbers.before = (...args) => args.map(ListNode.gen)
 
 addTwoNumbers.after = result => [...result]
 

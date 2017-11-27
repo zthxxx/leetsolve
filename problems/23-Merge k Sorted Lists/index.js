@@ -96,6 +96,6 @@ module.exports = [
 
 mergeKLists_fetch.timeout = 8000
 
-module.exports.beforeEach = lists => [lists.map(ListNode.generate)]
+module.exports.beforeEach = lists => [lists.map(ListNode.gen)]
 
 module.exports.afterEach = [result => result || [], result => [...result]]

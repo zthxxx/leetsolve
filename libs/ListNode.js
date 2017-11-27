@@ -12,11 +12,17 @@ class ListNode {
     this.next = null
   }
 
-  static generate (array) {
+  /**
+   * generate ListNode chain
+   * @param {Array} array
+   * @returns {ListNode}
+   */
+  static gen (array) {
     if (!array || !array.length) return null
     let head = new ListNode(array[0])
     let chain = head
-    for (let val of array.slice(1)) {
+    for (let i = 1; i < array.length; i++) {
+      let val = array[i]
       chain.next = new ListNode(val)
       chain = chain.next
     }

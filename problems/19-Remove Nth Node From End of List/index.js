@@ -26,7 +26,7 @@ let removeNthFromEnd = function (head, n) {
   return head
 }
 
-removeNthFromEnd.before = (list, n) => [ListNode.generate(list), n]
+removeNthFromEnd.before = (list, n) => [ListNode.gen(list), n]
 
 removeNthFromEnd.after = [result => result || [], result => [...result]]
 
