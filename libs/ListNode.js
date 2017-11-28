@@ -7,14 +7,23 @@
  */
 
 class ListNode {
+  /**
+   * creat a list node
+   * @param {number} val
+   * @return {ListNode}
+   */
   constructor (val) {
     this.val = val
+    /**
+     * next point
+     * @type {ListNode}
+     */
     this.next = null
   }
 
   /**
    * generate ListNode chain
-   * @param {Array} array
+   * @param {number[]} array
    * @returns {ListNode}
    */
   static gen (array) {
