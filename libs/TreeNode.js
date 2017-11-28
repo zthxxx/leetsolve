@@ -60,17 +60,17 @@ class TreeNode {
    * @yield {number} val
    */
   static* levorder (node) {
-    let stack = [node]
+    let queue = [node]
     let valids = 1
-    while (stack.length && valids > 0) {
-      let now = stack.shift()
+    while (queue.length && valids > 0) {
+      let now = queue.shift()
       if (now) {
         yield now.val
         valids -= 1
         if (now.left) valids += 1
         if (now.right) valids += 1
-        stack.push(now.left)
-        stack.push(now.right)
+        queue.push(now.left)
+        queue.push(now.right)
       } else {
         yield null
       }
