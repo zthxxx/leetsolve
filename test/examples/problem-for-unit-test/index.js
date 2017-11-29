@@ -7,7 +7,7 @@ function alwaysNotExpect () {
   return 'not anything'
 }
 
-function timeoutWithInputFalse (flag, index) {
+function timeoutWithInputFalse (flag) {
   if (flag === false) {
     while (true)
       ;
@@ -20,3 +20,5 @@ module.exports = [
   alwaysNotExpect,
   timeoutWithInputFalse
 ]
+
+timeoutWithInputFalse.timeout = 500

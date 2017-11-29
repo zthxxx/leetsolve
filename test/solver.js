@@ -36,6 +36,7 @@ class Solver {
     this.caseIndex = 0
     this.timeout = timeout
     this.worker = null
+    this.oks = 0
     this.errors = errors
   }
 
@@ -79,7 +80,7 @@ class Solver {
       this.onResult(result)
     })
 
-    let state = new Promise(resolve => {
+    return new Promise(resolve => {
       worker.on('exit', () => {
         clearTimeout(waiting)
         if (worker.exitedAfterDisconnect) {
@@ -91,10 +92,6 @@ class Solver {
         resolve()
       })
     })
-
-    worker.send('run')
-
-    return state
   }
 
   onResult (result) {
@@ -126,11 +123,14 @@ class Solver {
       this.solution = solution
       this.solveName = solveName
       this.solvIndex = solvIndex
+      let errorlen = this.errors.length
       this.worker = this.workerFork()
       while (this.worker) {
         await this.consumer()
       }
+      if (errorlen === this.errors.length) this.oks += 1
     }
+    return this.oks
   }
 }
 
