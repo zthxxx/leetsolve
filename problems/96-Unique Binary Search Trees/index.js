@@ -12,7 +12,6 @@ require('../../libs/runDirect')
  * 一棵树的左子树节点数可能情况从 0 ~ n - 1
  * 同理右侧也一样
  * @param {number} n
- * @param {number[]} cache
  * @return {number}
  */
 let numTrees = function (n) {
