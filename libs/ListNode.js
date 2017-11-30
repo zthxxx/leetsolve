@@ -28,14 +28,12 @@ class ListNode {
    */
   static gen (array) {
     if (!array || !array.length) return null
-    let head = new ListNode(array[0])
-    let chain = head
-    for (let i = 1; i < array.length; i++) {
-      let val = array[i]
-      chain.next = new ListNode(val)
-      chain = chain.next
-    }
-    return head
+    let nodes = array.map(val => new ListNode(val))
+    nodes.reduce((last, next) => {
+      last.next = next
+      return next
+    })
+    return nodes[0]
   }
 
   * [Symbol.iterator] () {
