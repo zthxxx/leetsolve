@@ -27,7 +27,7 @@ let mergeTwoLists = function (l1, l2) {
   return l1
 }
 
-mergeTwoLists.before = (...lists) => lists.map(ListNode.gen)
+mergeTwoLists.before = (...lists) => lists.map(list => ListNode.gen(list))
 
 mergeTwoLists.after = [result => result || [], result => [...result]]
 

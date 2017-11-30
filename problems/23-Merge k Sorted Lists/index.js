@@ -2,53 +2,6 @@ require('../../libs/runDirect')
 const ListNode = require('../../libs/ListNode')
 
 /**
- * 获取并返回值最小的一个结点
- * 如果没有的话就返回 null
- * 这里该用最小堆，没有堆的话，每次要遍历比较
- * 效率很低
- * @param {ListNode[]} lists
- * @return {(ListNode | null)}
- */
-function minNode (lists) {
-  let minIndex = 0
-  let min = Infinity
-  for (let [index, node] of lists.entries()) {
-    if (!node) continue
-    if (node.val < min) {
-      minIndex = index
-      min = node.val
-    }
-  }
-  let node = lists[minIndex]
-  if (node) lists[minIndex] = node.next
-  return node
-}
-
-/**
- * 每次获取一个最小的结点，
- * 然后串在一起
- * @param {ListNode[]} lists
- * @return {ListNode}
- */
-let mergeKLists_fetch = function (lists) {
-  if (!lists || !lists.length) return null
-  let merged = minNode(lists)
-  let head = merged
-  while (true) {
-    let next = minNode(lists)
-    if (next) {
-      merged.next = next
-      merged = merged.next
-    }
-    else {
-      break
-    }
-  }
-  return head
-}
-
-
-/**
  * @param {ListNode} l1
  * @param {ListNode} l2
  * @return {ListNode}
@@ -76,6 +29,9 @@ let mergeTwoLists = function (l1, l2) {
 
 /**
  * 把每个链两两并归排序
+ * 还有个方法是用最小堆
+ * 把几个链的头节点来维护一个最小堆
+ * 每次获取并返回所有头节点中值最小的节点
  * @param {ListNode[]} lists
  * @return {ListNode}
  */
@@ -89,13 +45,8 @@ let mergeKLists_merge = function (lists) {
 }
 
 
-module.exports = [
-  mergeKLists_fetch,
-  mergeKLists_merge
-]
+module.exports = mergeKLists_merge
 
-mergeKLists_fetch.timeout = 8000
+module.exports.before = lists => [lists.map(list => ListNode.gen(list))]
 
-module.exports.beforeEach = lists => [lists.map(ListNode.gen)]
-
-module.exports.afterEach = [result => result || [], result => [...result]]
+module.exports.after = [result => result || [], result => [...result]]

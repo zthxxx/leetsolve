@@ -1,3 +1,4 @@
+require('../../libs/runDirect')
 const ListNode = require('../../libs/ListNode')
 
 /**
@@ -9,15 +10,16 @@ const ListNode = require('../../libs/ListNode')
 let addTwoNumbers = function (l1, l2) {
   let [pl1, pl2] = [l1, l2]
   let [carry, plus] = addNode(pl1, pl2)
-  let plusHead = plus
+  let head = plus
   while (true) {
     [pl1, pl2] = [pl1 && pl1.next, pl2 && pl2.next]
     if (!pl1 && !pl2 && !carry) {
-      return plusHead
+      break
     }
     [carry, plus.next] = addNode(pl1, pl2, carry)
     plus = plus.next
   }
+  return head
 }
 
 function addNode (pl1, pl2, carry = 0) {
@@ -27,7 +29,7 @@ function addNode (pl1, pl2, carry = 0) {
   return [~~(sum / 10), new ListNode(sum % 10)]
 }
 
-addTwoNumbers.before = (...args) => args.map(ListNode.gen)
+addTwoNumbers.before = (...lists) => lists.map(list => ListNode.gen(list))
 
 addTwoNumbers.after = result => [...result]
 
