@@ -9,7 +9,7 @@
 class ListNode {
   /**
    * creat a list node
-   * @param {number} val
+   * @param {number} [val] - 节点的值，做补充头节点时可忽略
    * @return {ListNode}
    */
   constructor (val) {
@@ -24,23 +24,31 @@ class ListNode {
   /**
    * generate ListNode chain
    * @param {number[]} array
+   * @param {number | null} [trackIndex] - 表示原链的尾节点的下一项要指向链中哪个序号的节点
+   * 如参数 ([1,2,3,4,5], 3) 表示原本尾节点的下一项，
+   * 现在指向第 4 个节点（序号为 3，值为 4）
+   * 不传此项或超出序号则不成环
    * @returns {ListNode}
    */
-  static gen (array) {
+  static gen (array, trackIndex = null) {
     if (!array || !array.length) return null
     let nodes = array.map(val => new ListNode(val))
     nodes.reduce((last, next) => {
       last.next = next
       return next
     })
+    if (trackIndex !== null) {
+      let last = nodes[nodes.length - 1]
+      last.next = nodes[trackIndex] || null
+    }
     return nodes[0]
   }
 
   * [Symbol.iterator] () {
-    let chain = this
-    while (chain) {
-      yield chain.val
-      chain = chain.next
+    let head = this
+    while (head) {
+      yield head.val
+      head = head.next
     }
   }
 

@@ -60,6 +60,10 @@ class RandomListNode {
   * [Symbol.iterator] () {
     yield* RandomListNode.serial(this)
   }
+
+  toJSON () {
+    return Array.from(this)
+  }
 }
 
 module.exports = RandomListNode

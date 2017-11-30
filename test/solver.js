@@ -97,14 +97,14 @@ class Solver {
   onResult (result) {
     let { answer, index, elapse } = result
     let { expect } = this.testcases[index]
-    let error = this.getAssertError({ caseIndex: index, answer })
     this.caseIndex = index + 1
     try {
-      assert.deepEqual(answer, expect, error.message)
+      assert.deepEqual(answer, expect)
       console.warn('    ', green('√'), 'case', this.caseIndex, 'tested ok!', green(`(${elapse}ms)`))
     } catch (e) {
+      let error = this.getAssertError({ caseIndex: index, answer })
+      this.errors.push(error.message)
       console.warn('    ', red('×'), 'case', this.caseIndex, 'not expect', red(`(${elapse}ms)`))
-      this.errors.push(e.message)
     }
   }
 
