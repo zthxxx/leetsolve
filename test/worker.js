@@ -1,129 +1,103 @@
 const path = require('path')
 const cluster = require('cluster')
-const cli = require('cac')()
 const { config } = require('../libs/configs')
+const log = (...msg) => { if (config.workerDebug) console.warn(...msg) }
 
 if (cluster.isMaster) { process.exit(1) }
 
-cli.command('path', {
-  desc: 'problem path'
-}).option('solve', {
-  desc: 'solution index',
-  type: 'number',
-  default: 0
-}).option('case', {
-  desc: 'testcase index',
-  type: 'number',
-  default: 0
-})
 
-const commad = cli.parse(null, { run: false })
+let arrayFrom = any => any && (Array.isArray(any) ? any : [any]) || []
 
-let { solve: solvIndex, case: caseBase } = commad.flags
-
-const problemPath = commad.input[0]
-const casefile = config.casefile
-
-const log = (...msg) => { if (config.workerDebug) console.warn(...msg) }
-
-log(`工作进程 ${process.pid} 已启动`)
-
-class Worker {
-  constructor (problemPath, casefile, solvIndex, caseBase) {
-    this.solutions = []
-    this.solution = null
-    this.testcases = []
-    this.initSolution(problemPath, casefile, solvIndex, caseBase)
-    this.caseBase = caseBase
+class Problem {
+  constructor (problemPath, casefile, solveBase = 0, caseBase = 0) {
     this.beforeEachs = []
-    this.befores = []
-    this.afters = []
     this.afterEachs = []
-    this.registerHooks(this.solutions)
-    this.registerHook(this.solution)
+    this.solveBase = solveBase
+    this.caseBase = caseBase
+    this.solutions = require(problemPath)
+    this.testcases = require(path.join(problemPath, casefile))
+    this.initialize()
   }
 
-  initSolution (problemPath, casefile, solvIndex, caseBase) {
-    this.solutions = require(problemPath)
-    if (!(this.solutions instanceof Array)) this.solution = this.solutions
-    else this.solution = this.solutions[solvIndex]
-    if (!this.solution) throw new Error(`not have solution with this index #${solvIndex}`)
-    this.testcases = require(path.join(problemPath, casefile))
+  initialize () {
+    let { solveBase, caseBase } = this
+    this.registerHooks(this.solutions)
+    if (!Array.isArray(this.solutions)) this.solutions = [this.solutions]
+    if (solveBase) this.solutions = this.solutions.slice(solveBase)
     if (caseBase) this.testcases = this.testcases.slice(caseBase)
   }
 
   registerHooks (solutions) {
-    if (!(solutions instanceof Array)) return
+    if (!Array.isArray(solutions)) return
     let { beforeEach, afterEach } = solutions
-    let hookBeforeEach = beforeEach => {
-      let isArray = Array.isArray(beforeEach)
-      if (isArray) this.beforeEachs.push(...beforeEach)
-      else this.beforeEachs.push(beforeEach)
-    }
-    let hookAfterEach = afterEach => {
-      let isArray = Array.isArray(afterEach)
-      if (isArray) this.afterEachs.push(...afterEach)
-      else this.afterEachs.push(afterEach)
-    }
-    if (beforeEach) hookBeforeEach(beforeEach)
-    if (afterEach) hookAfterEach(afterEach)
+    this.beforeEachs = arrayFrom(beforeEach)
+    this.afterEachs = arrayFrom(afterEach)
   }
 
   registerHook (solution) {
     let { before, after } = solution
-    let hookBefore = before => {
-      let isArray = Array.isArray(before)
-      if (isArray) this.befores.push(...before)
-      else this.befores.push(before)
-    }
-    let hookAfter = after => {
-      let isArray = Array.isArray(after)
-      if (isArray) this.afters.push(...after)
-      else this.afters.push(after)
-    }
-    if (before) hookBefore(before)
-    if (after) hookAfter(after)
+    return [arrayFrom(before), arrayFrom(after)]
   }
 
-  handleBefores (input) {
-    let dealInput = this.beforeEachs.reduce((inWare, hook) => hook(...inWare), input)
-    return this.befores.reduce((inWare, hook) => hook(...inWare), dealInput)
+  handleBefores (input, befores) {
+    let hook = (inputs, deal) => deal(...inputs)
+    let dealInput = this.beforeEachs.reduce(hook, input)
+    return befores.reduce(hook, dealInput)
   }
 
-  handleAfters (result) {
-    let dealResult = this.afters.reduce((outWare, hook) => hook(outWare), result)
-    return this.afterEachs.reduce((outWare, hook) => hook(outWare), dealResult)
+  handleAfters (result, afters) {
+    let hook = (output, deal) => deal(output)
+    let dealResult = afters.reduce(hook, result)
+    return this.afterEachs.reduce(hook, dealResult)
   }
 
-  timerHook (fn, args) {
+  timerMeasure (fn, args) {
     let now = Date.now()
     let result = fn(...args)
     let elapse = Date.now() - now
     return [result, elapse]
   }
 
-  runSolve () {
-    let { solution, testcases, timerHook } = this
-    for (let [caseIndex, { input }] of testcases.entries()) {
-      let inputArgs = this.handleBefores(input)
-      let [answer, elapse] = timerHook(solution, inputArgs)
-      answer = this.handleAfters(answer)
-      let result = {
-        index: this.caseBase + caseIndex,
-        answer, elapse
-      }
-      if (cluster.isWorker) {
-        cluster.worker.send(result)
+  * solve () {
+    let { solutions, testcases, timerMeasure } = this
+    for (let [solverIndex, solution] of solutions.entries()) {
+      let [befores, afters] = this.registerHook(solution)
+      for (let [caseIndex, { input }] of testcases.entries()) {
+        let inputArgs = this.handleBefores(input, befores)
+        let [answer, elapse] = timerMeasure(solution, inputArgs)
+        answer = this.handleAfters(answer, afters)
+        let result = {
+          solve: this.solveBase + solverIndex,
+          cased: this.caseBase + caseIndex,
+          answer,
+          elapse
+        }
+        yield result
       }
     }
   }
+}
 
-  run () {
-    this.runSolve()
-    log(`工作进程 ${process.pid} 正在退出`)
-    cluster.worker.disconnect()
+
+class Worker {
+  constructor (casefile) {
+    this.casefile = casefile
+  }
+
+  runSolve ({ problemPath, solveBase, caseBase }) {
+    let problem = new Problem(problemPath, this.casefile, solveBase, caseBase)
+    for (let result of problem.solve()) {
+      cluster.worker.send(result)
+    }
+    cluster.worker.send({ done: true })
+  }
+
+  listen () {
+    let deal = workArgs => this.runSolve(workArgs)
+    cluster.worker.on('message', deal)
   }
 }
 
-new Worker(problemPath, casefile, solvIndex, caseBase)
-  .run()
+log(`工作进程 ${process.pid} 已启动`)
+
+new Worker(config.casefile).listen()

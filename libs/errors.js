@@ -5,11 +5,11 @@ const { whiteBright, white, redBright: red, greenBright: green } = chalk
 
 
 class WrongAnswerException extends Error {
-  constructor ({ problem, solveName, caseIndex, input, answer, expect }) {
+  constructor ({ problem, solveName, caseCount, input, answer, expect }) {
     let message = red(`
         Wrong Answer at ${whiteBright.underline(problem)}:
           the solution -- ${white(solveName)}
-          with ${green('#')}${green(caseIndex)} input ${green(JSON.stringify(input))}
+          with ${green('#')}${green(caseCount)} input ${green(JSON.stringify(input))}
           get answer ${green(JSON.stringify(answer))} , but expect ${green(JSON.stringify(expect))}
 
     `)
@@ -23,11 +23,11 @@ class WrongAnswerException extends Error {
 }
 
 class TimeLimitException extends Error {
-  constructor ({ problem, solveName, caseIndex, input, expect, timeout }) {
+  constructor ({ problem, solveName, caseCount, input, expect, timeout }) {
     let message = red(`
         Time Limit Exceeded at ${whiteBright.underline(problem)}:
           the solution -- ${white(solveName)}
-          with ${green('#' + caseIndex)} input ${green(JSON.stringify(input))}
+          with ${green('#' + caseCount)} input ${green(JSON.stringify(input))}
           expect ${green(JSON.stringify(expect))}, but execute timeout.
 
     `)

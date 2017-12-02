@@ -1,136 +1,132 @@
 const path = require('path')
 const assert = require('assert')
-const cluster = require('cluster')
 const {
   WrongAnswerException,
   TimeLimitException
 } = require('../libs/errors')
 const { redBright: red, greenBright: green } = require('chalk')
-const { config, configName } = require('../libs/configs')
-
-
-function forkSetup (problemPath, solvIndex, caseIndex) {
-  let args = [
-    'path', problemPath,
-    '--config', configName,
-    '--solve', solvIndex
-  ]
-  if (caseIndex) args.push(...['--case', caseIndex])
-  cluster.setupMaster({
-    exec: path.join(__dirname, 'worker.js'),
-    args,
-    silent: !config.workerLog
-  })
-}
-
 
 class Solver {
-  constructor (problemPath, solutions, testcases, errors, timeout = 2000) {
+  constructor (problemPath, solutions, testcases, worker, reboot, timeout = 2000) {
     this.problemPath = problemPath
     this.problem = path.basename(problemPath)
     this.solutions = solutions
-    this.solution = null
     this.testcases = testcases
-    this.solveName = ''
-    this.solvIndex = 0
-    this.caseIndex = 0
+    this.solveIndex = 0
+    this.caseIndex = -1
+    this.worker = worker
+    this.reboot = reboot
     this.timeout = timeout
-    this.worker = null
-    this.oks = 0
-    this.errors = errors
+    this.feedback = solutions.map(solver => ({
+      solver: solver.name || '[ANONYMOUS]',
+      feedback: []
+    }))
+    this.caseStatus = solutions.map(() => [])
+    this.errors = []
   }
 
-  workerFork (caseIndex = 0) {
-    forkSetup(this.problemPath, this.solvIndex, caseIndex)
-    return cluster.fork()
-  }
-
-  getAssertError ({ caseIndex, answer }) {
+  getAssertError (answer) {
+    let caseIndex = this.caseIndex
     let { input, expect } = this.testcases[caseIndex]
+    let solveName = this.solutions[this.solveIndex].name || '[ANONYMOUS]'
     return new WrongAnswerException({
       problem: this.problem,
-      solveName: this.solveName,
-      caseIndex: caseIndex + 1,
+      solveName,
+      caseCount: caseIndex + 1,
       input, answer, expect
     })
   }
 
-  getTimeoutError ({ caseIndex }) {
+  getTimeoutError (timeout) {
+    let caseIndex = this.caseIndex
     let { input, expect } = this.testcases[caseIndex]
+    let solveName = this.solutions[this.solveIndex].name || '[ANONYMOUS]'
     return new TimeLimitException({
       problem: this.problem,
-      solveName: this.solveName,
-      caseIndex: caseIndex + 1,
-      input, expect
-    })
-  }
-
-  consumer () {
-    let { worker } = this
-    let timeout = this.solution.timeout || this.solutions.timeout || this.timeout
-    let timelimit = () => setTimeout(
-      () => worker.process.kill('SIGKILL'),
+      solveName,
+      caseCount: caseIndex + 1,
+      input, expect,
       timeout
-    )
-    let waiting = timelimit()
-
-    worker.on('message', result => {
-      clearTimeout(waiting)
-      waiting = timelimit()
-      this.onResult(result)
-    })
-
-    return new Promise(resolve => {
-      worker.on('exit', () => {
-        clearTimeout(waiting)
-        if (worker.exitedAfterDisconnect) {
-          this.worker = null
-        } else {
-          this.onTimeout()
-          this.worker = this.workerFork(this.caseIndex)
-        }
-        resolve()
-      })
     })
   }
 
   onResult (result) {
-    let { answer, index, elapse } = result
-    let { expect } = this.testcases[index]
-    this.caseIndex = index + 1
+    let { solve, cased, answer, elapse } = result
+    this.solveIndex = solve
+    this.caseIndex = cased
+    let { expect } = this.testcases[cased]
+    let { feedback } = this
     try {
       assert.deepEqual(answer, expect)
-      console.warn('    ', green('√'), 'case', this.caseIndex, 'tested ok!', green(`(${elapse}ms)`))
+      this.caseStatus[solve].push(true)
+      let tip = ['    ', green('√'), 'case', cased + 1, 'tested ok!', green(`(${elapse}ms)`)]
+      feedback[solve].feedback.push(tip)
     } catch (e) {
-      let error = this.getAssertError({ caseIndex: index, answer })
+      this.caseStatus[solve].push(false)
+      let tip = ['    ', red('×'), 'case', cased + 1, 'not expect', red(`(${elapse}ms)`)]
+      feedback[solve].feedback.push(tip)
+      let error = this.getAssertError(answer)
       this.errors.push(error.message)
-      console.warn('    ', red('×'), 'case', this.caseIndex, 'not expect', red(`(${elapse}ms)`))
     }
   }
 
-  onTimeout () {
-    let timeout = this.getTimeoutError({ caseIndex: this.caseIndex })
-    this.errors.push(timeout.message)
+  onTimeout (timeout) {
+    let { caseStatus, feedback, solveIndex } = this
+    caseStatus[solveIndex].push(false)
     this.caseIndex += 1
-    console.warn('    ', red('×'), 'case', this.caseIndex, 'timeout')
+    let tip = ['    ', red('×'), 'case', this.caseIndex + 1, 'timeouted, elapse more than', red(`${timeout}ms`)]
+    feedback[solveIndex].feedback.push(tip)
+    let error = this.getTimeoutError(timeout)
+    this.errors.push(error.message)
   }
 
-  async solutionsHandle () {
-    let solutions = this.solutions
-    for (let [solvIndex, solution] of solutions.entries()) {
-      let solveName = solution.name || '[ANONYMOUS]'
-      console.log('  ', '[solution]', solveName)
-      this.solution = solution
-      this.solveName = solveName
-      this.solvIndex = solvIndex
-      let errorlen = this.errors.length
-      this.worker = this.workerFork()
-      while (this.worker) {
+  consumer () {
+    let { worker, problemPath, solutions, solveIndex, caseIndex } = this
+    let solution = solutions[solveIndex]
+    let timeout = solution.timeout || solutions.timeout || this.timeout
+    let timelimit = () => setTimeout(
+      () => worker.process.kill('SIGKILL'),
+      timeout
+    )
+    let promise = new Promise((resolve, reject) => {
+      let waiting = timelimit()
+      worker.on('message', result => {
+        clearTimeout(waiting)
+        if (result.done) return resolve()
+        waiting = timelimit()
+        this.onResult(result)
+      })
+
+      worker.on('exit', () => {
+        clearTimeout(waiting)
+        this.onTimeout(timeout)
+        reject()
+      })
+    })
+    worker.send({
+      problemPath,
+      solveBase: solveIndex,
+      caseBase: caseIndex + 1
+    })
+    return promise
+  }
+
+  async run () {
+    while (true) {
+      try {
         await this.consumer()
+        this.worker.removeAllListeners()
+        break
+      } catch (e) {
+        this.worker = this.reboot(this.worker.id)
       }
-      if (errorlen === this.errors.length) this.oks += 1
     }
-    return this.oks
+    let { feedback, errors } = this
+    let accpet = this.caseStatus
+      .map(status => status.every(item => item))
+      .reduce((last, next) => last + next)
+    let total = this.solutions.length
+    return { feedback, accpet, total, errors }
   }
 }
 
