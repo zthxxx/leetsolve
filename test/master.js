@@ -18,6 +18,7 @@ class Leetsolve {
       solvers: 0
     }
     this.errors = []
+    this.created = Date.now()
   }
 
   loadProblem (problem) {
@@ -31,7 +32,7 @@ class Leetsolve {
         let error = new CompileException({ problem, stack: e.stack })
         this.errors.push(error.message)
         console.log()
-        console.warn(red('×'), white('[problem]'), white(problem), 'solutions Compile Error')
+        console.warn(white('[problem]'), red('×'), white(problem), 'solutions Compile Error')
         return []
       }
       throw e
@@ -43,14 +44,18 @@ class Leetsolve {
     console.log()
     console.log('  Executed', white(`${successes.problems} / ${problems.length}`), 'problems', green('SUCCESS'))
     console.log('  total', white(`${successes.solvers} / ${solversTotal}`), 'solutions', green('ok'))
+    console.log('  passing', Date.now() - this.created, 'ms')
   }
 
-  showProblemTips (problem, feedback) {
+  showProblemTips (problem, status, feedback) {
     console.log()
     console.log(white('[problem]'), white(problem))
-    for (let feed of feedback) {
-      console.log('  ', '[solution]', feed.solver)
-      feed.feedback.map(tip => console.log(...tip))
+    for (let [index, feed] of feedback.entries()) {
+      let flag = status[index] ? green('√') : red('×')
+      console.log('  ', '[solution]', flag, feed.solver)
+      if (config.testcaseTips) {
+        feed.feedback.map(tip => console.log(...tip))
+      }
     }
   }
 
@@ -60,14 +65,14 @@ class Leetsolve {
     if (!Array.isArray(solutions)) solutions = [solutions]
     let problemPath = path.join(this.problemBase, problem)
     let solver = new Solver(problemPath, solutions, testcases, worker, id => this.pool.reset(id), config.timeout)
-    let { feedback, accpet, total, errors } = await solver.run()
+    let { status, feedback, errors } = await solver.run()
     this.pool.idle(worker)
 
-    this.successes.solvers += accpet
-    this.solversTotal += total
+    this.successes.solvers += status.reduce((last, next) => last + next)
+    this.solversTotal += status.length
     if (errors.length) this.errors.push(...errors)
     else this.successes.problems += 1
-    this.showProblemTips(problem, feedback)
+    if (config.problemTips) this.showProblemTips(problem, status, feedback)
   }
 
   async run () {

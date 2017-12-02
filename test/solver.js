@@ -122,11 +122,9 @@ class Solver {
       }
     }
     let { feedback, errors } = this
-    let accpet = this.caseStatus
+    let status = this.caseStatus
       .map(status => status.every(item => item))
-      .reduce((last, next) => last + next)
-    let total = this.solutions.length
-    return { feedback, accpet, total, errors }
+    return { status, feedback, errors }
   }
 }
 

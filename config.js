@@ -22,5 +22,15 @@ module.exports = {
   /**
    * whether or not to show worker debug level logging
    */
-  workerDebug: false
+  workerDebug: false,
+
+  /**
+   * is allow to display feedback tips per problems
+   */
+  problemTips: true,
+
+  /**
+   * is allow to display feedback tips per testcases
+   */
+  testcaseTips: true
 }
