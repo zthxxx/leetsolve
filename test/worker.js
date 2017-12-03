@@ -1,9 +1,6 @@
 const path = require('path')
-const cluster = require('cluster')
 const { config } = require('../libs/configs')
 const log = (...msg) => { if (config.workerDebug) console.warn(...msg) }
-
-if (cluster.isMaster) { process.exit(1) }
 
 
 let arrayFrom = any => any && (Array.isArray(any) ? any : [any]) || []
@@ -87,14 +84,14 @@ class Worker {
   runSolve ({ problemPath, solveBase, caseBase }) {
     let problem = new Problem(problemPath, this.casefile, solveBase, caseBase)
     for (let result of problem.solve()) {
-      cluster.worker.send(result)
+      process.send(result)
     }
-    cluster.worker.send({ done: true })
+    process.send({ done: true })
   }
 
   listen () {
     let deal = workArgs => this.runSolve(workArgs)
-    cluster.worker.on('message', deal)
+    process.on('message', deal)
   }
 }
 

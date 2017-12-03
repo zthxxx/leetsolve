@@ -84,7 +84,6 @@ class Leetsolve {
       tasks.push(task)
     }
     await join(tasks)
-    this.pool.clear()
 
     if (this.errors.length) {
       showErrorStack(this.errors)
@@ -92,6 +91,7 @@ class Leetsolve {
     }
 
     this.showSuccessTotal()
+    this.pool.clear()
   }
 }
 

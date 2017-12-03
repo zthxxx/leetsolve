@@ -1,24 +1,29 @@
 const path = require('path')
 const cluster = require('cluster')
-const EventEmitter = require('events')
 const { config, configName } = require('../libs/configs')
+const Queue = require('../libs/queue')
 
 cluster.setupMaster({
-  exec: path.join(__dirname, 'worker.js'),
+  exec: path.join(__dirname, './worker.js'),
   args: ['--config', configName],
   silent: !config.workerLog
 })
 
-class Pool extends EventEmitter {
+class Pool extends Queue {
   constructor (size) {
-    super()
-    this.size = size
+    super(size)
     this.counter = {}
+    /**
+     * processing workers pool
+     * @type {Map<cluster.worker>}
+     */
     this.pool = new Map()
     while (this.pool.size < size) {
       this.create()
     }
-    this.idles = [...this.pool.keys()]
+    for (let id of this.pool.keys()) {
+      this.put(id)
+    }
   }
 
   remove (id) {
@@ -43,7 +48,9 @@ class Pool extends EventEmitter {
       worker.disconnect()
     }
     this.pool.clear()
-    this.idles = []
+    while (this.size()) {
+      this._get()
+    }
   }
 
   count (id) {
@@ -54,23 +61,17 @@ class Pool extends EventEmitter {
     console.log(JSON.stringify(this.counter, null, 4))
   }
 
-  get () {
-    return new Promise(resolve => {
-      let { idles, pool } = this
-      let get = () => {
-        let id = idles.shift()
-        let worker = pool.get(id)
-        this.count(id)
-        resolve(worker)
-      }
-      if (idles.length) get()
-      else this.once('push', get)
-    })
+  /**
+   * get a worker instance blocked
+   * @return {Worker} worker
+   */
+  async get () {
+    let id = await super.get()
+    return this.pool.get(id)
   }
 
   idle ({ id }) {
-    this.idles.push(id)
-    this.emit('push')
+    this.put(id)
   }
 }
 
