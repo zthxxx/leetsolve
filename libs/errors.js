@@ -3,14 +3,19 @@ const chalk = require('chalk')
 chalk.level = 3
 const { whiteBright, white, redBright: red, greenBright: green } = chalk
 
+const MAX_STR_LEN = 200
+let strLenLimit = str => str.length > MAX_STR_LEN && str.slice(0, MAX_STR_LEN) + '...' || str
 
 class WrongAnswerException extends Error {
   constructor ({ problem, solveName, caseCount, input, answer, expect }) {
+    input = strLenLimit(JSON.stringify(input))
+    answer = strLenLimit(JSON.stringify(answer))
+    expect = strLenLimit(JSON.stringify(expect))
     let message = red(`
         Wrong Answer at ${whiteBright.underline(problem)}:
           the solution -- ${white(solveName)}
-          with ${green('#')}${green(caseCount)} input ${green(JSON.stringify(input))}
-          get answer ${green(JSON.stringify(answer))} , but expect ${green(JSON.stringify(expect))}
+          with ${green('#')}${green(caseCount)} input ${green(input)}
+          get answer ${green(answer)} , but expect ${green(expect)}
 
     `)
     super(message)
@@ -24,11 +29,13 @@ class WrongAnswerException extends Error {
 
 class TimeLimitException extends Error {
   constructor ({ problem, solveName, caseCount, input, expect, timeout }) {
+    input = strLenLimit(JSON.stringify(input))
+    expect = strLenLimit(JSON.stringify(expect))
     let message = red(`
         Time Limit Exceeded at ${whiteBright.underline(problem)}:
           the solution -- ${white(solveName)}
-          with ${green('#' + caseCount)} input ${green(JSON.stringify(input))}
-          expect ${green(JSON.stringify(expect))}, but execute timeout.
+          with ${green('#' + caseCount)} input ${green(input)}
+          expect ${green(expect)}, but execute timeout.
 
     `)
     super(message)

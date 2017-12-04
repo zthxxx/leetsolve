@@ -6,22 +6,20 @@ const log = (...msg) => { if (config.workerDebug) console.warn(...msg) }
 let arrayFrom = any => any && (Array.isArray(any) ? any : [any]) || []
 
 class Problem {
-  constructor (problemPath, casefile, solveBase = 0, caseBase = 0) {
+  constructor (problemPath, casefile, solveBase = 0) {
     this.beforeEachs = []
     this.afterEachs = []
     this.solveBase = solveBase
-    this.caseBase = caseBase
     this.solutions = require(problemPath)
     this.testcases = require(path.join(problemPath, casefile))
     this.initialize()
   }
 
   initialize () {
-    let { solveBase, caseBase } = this
+    let { solveBase } = this
     this.registerHooks(this.solutions)
     if (!Array.isArray(this.solutions)) this.solutions = [this.solutions]
     if (solveBase) this.solutions = this.solutions.slice(solveBase)
-    if (caseBase) this.testcases = this.testcases.slice(caseBase)
   }
 
   registerHooks (solutions) {
@@ -55,22 +53,24 @@ class Problem {
     return [result, elapse]
   }
 
-  * solve () {
+  * solve (caseBase) {
     let { solutions, testcases, timerMeasure } = this
     for (let [solverIndex, solution] of solutions.entries()) {
       let [befores, afters] = this.registerHook(solution)
-      for (let [caseIndex, { input }] of testcases.entries()) {
+      for (let caseIndex = caseBase; caseIndex < testcases.length; caseIndex++) {
+        let { input } = testcases[caseIndex]
         let inputArgs = this.handleBefores(input, befores)
         let [answer, elapse] = timerMeasure(solution, inputArgs)
         answer = this.handleAfters(answer, afters)
         let result = {
           solve: this.solveBase + solverIndex,
-          cased: this.caseBase + caseIndex,
+          cased: caseIndex,
           answer,
           elapse
         }
         yield result
       }
+      caseBase = 0
     }
   }
 }
@@ -82,8 +82,8 @@ class Worker {
   }
 
   runSolve ({ problemPath, solveBase, caseBase }) {
-    let problem = new Problem(problemPath, this.casefile, solveBase, caseBase)
-    for (let result of problem.solve()) {
+    let problem = new Problem(problemPath, this.casefile, solveBase)
+    for (let result of problem.solve(caseBase)) {
       process.send(result)
     }
     process.send({ done: true })

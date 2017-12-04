@@ -2,6 +2,7 @@ require('../../libs/runDirect')
 const ListNode = require('../../libs/ListNode')
 
 /**
+ * 合并两个有序的链表 #21
  * @param {ListNode} l1
  * @param {ListNode} l2
  * @return {ListNode}
