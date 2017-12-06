@@ -1,3 +1,4 @@
+const ListNode = require('./ListNode')
 /**
  * Definition for singly-linked list with a random pointer.
  * function RandomListNode(label) {
@@ -6,19 +7,20 @@
  * }
  */
 
-class RandomListNode {
+class RandomListNode extends ListNode {
   /**
    * creat a list node with random
    * @param {number} val
    * @return {RandomListNode}
    */
   constructor (val) {
-    this.label = val
+    super(val)
+    this.label = this.val
     /**
-     * next or random point
+     * random point
      * @type {RandomListNode}
      */
-    this.next = this.random = null
+    this.random = null
   }
 
   /**
@@ -33,13 +35,13 @@ class RandomListNode {
      * @type {RandomListNode[]}
      */
     let nodes = array.map(item =>
-      new RandomListNode(Array.isArray(item) ? item[0] : item)
+      new this(Array.isArray(item) ? item[0] : item)
     )
     nodes.reduce((last, now, i) => {
       last.next = now
       now.random = nodes[array[i][1]] || null
       return now
-    }, new RandomListNode())
+    }, new this())
     return nodes[0]
   }
 
@@ -55,14 +57,6 @@ class RandomListNode {
       else yield head.label
       head = head.next
     }
-  }
-
-  * [Symbol.iterator] () {
-    yield* RandomListNode.serial(this)
-  }
-
-  toJSON () {
-    return Array.from(this)
   }
 }
 

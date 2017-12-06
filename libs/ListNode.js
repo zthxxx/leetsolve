@@ -32,7 +32,7 @@ class ListNode {
    */
   static gen (array, trackIndex = null) {
     if (!array || !array.length) return null
-    let nodes = array.map(val => new ListNode(val))
+    let nodes = array.map(val => new this(val))
     nodes.reduce((last, next) => {
       last.next = next
       return next
@@ -44,12 +44,15 @@ class ListNode {
     return nodes[0]
   }
 
-  * [Symbol.iterator] () {
-    let head = this
+  static* serial (head) {
     while (head) {
       yield head.val
       head = head.next
     }
+  }
+
+  * [Symbol.iterator] () {
+    yield* this.constructor.serial(this)
   }
 
   toJSON () {

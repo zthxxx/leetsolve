@@ -40,7 +40,7 @@ class TreeNode {
       if (val === null) {
         return null
       } else {
-        return new TreeNode(val)
+        return new this(val)
       }
     })
     let kids = nodes.concat()
@@ -78,7 +78,7 @@ class TreeNode {
   }
 
   * [Symbol.iterator] () {
-    yield* TreeNode.levorder(this)
+    yield* this.constructor.levorder(this)
   }
 
   toJSON () {

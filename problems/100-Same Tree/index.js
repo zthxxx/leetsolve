@@ -55,4 +55,4 @@ module.exports = [
   isSameTree_recursive
 ]
 
-module.exports.beforeEach = (...args) => args.map(TreeNode.gen)
+module.exports.beforeEach = (...args) => args.map(level => TreeNode.gen(level))

@@ -18,7 +18,7 @@ class Problem {
   initialize () {
     let { solveBase } = this
     this.registerHooks(this.solutions)
-    if (!Array.isArray(this.solutions)) this.solutions = [this.solutions]
+    this.solutions = arrayFrom(this.solutions)
     if (solveBase) this.solutions = this.solutions.slice(solveBase)
   }
 
@@ -53,7 +53,7 @@ class Problem {
     return [result, elapse]
   }
 
-  * solve (caseBase) {
+  * solve (caseBase = 0) {
     let { solutions, testcases, timerMeasure } = this
     for (let [solverIndex, solution] of solutions.entries()) {
       let [befores, afters] = this.registerHook(solution)
