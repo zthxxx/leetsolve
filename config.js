@@ -32,5 +32,5 @@ module.exports = {
   /**
    * is allow to display feedback tips per testcases
    */
-  testcaseTips: false
+  testcaseTips: true
 }
