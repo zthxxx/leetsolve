@@ -31,17 +31,14 @@ module.exports.before = (levels, p, q) => {
   let tree = TreeNode.gen(levels)
   function findNode (root, val) {
     if (!root) return null
-    let stack = []
-    while (root || stack.length) {
-      if (root) {
-        if (root.val === val) return root
-        stack.push(root)
-        root = root.left
-      } else {
-        root = stack.pop()
-        root = root.right
-      }
+    let stack = [root]
+    while (stack.length) {
+      root = stack.pop()
+      if (root.val === val) return root
+      if (root.left) stack.push(root.left)
+      if (root.right) stack.push(root.right)
     }
+    return null
   }
   p = findNode(tree, p)
   q = findNode(tree, q)
