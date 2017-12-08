@@ -32,10 +32,10 @@ class TreeLinkNode extends TreeNode {
  * 用队列保存当前层和下一层
  * 遍历当前层时依次串联层节点
  * @param {TreeLinkNode} root
- * @return {void | TreeLinkNode} Do not return anything, modify tree in-place instead.
+ * @return {void} Do not return anything, modify tree in-place instead.
  */
 let connect_BFS = function (root) {
-  if (!root) return null
+  if (!root) return
   let level = [root]
   while (level.length) {
     let nextLevel = []
@@ -47,7 +47,6 @@ let connect_BFS = function (root) {
     }
     level = nextLevel
   }
-  return root
 }
 
 /**
@@ -57,10 +56,9 @@ let connect_BFS = function (root) {
  * 所以只需要按照 next 指针依次走就是层序遍历了
  * 遍历完当前层走到尽头后，只需要通过辅助节点就跳转到下一层开头了
  * @param {TreeLinkNode} root
- * @return {void | TreeLinkNode} Do not return anything, modify tree in-place instead.
+ * @return {void} Do not return anything, modify tree in-place instead.
  */
 let connect = function (root) {
-  let tree = root
   while (root) {
     let head = new TreeLinkNode()
     let p = head
@@ -77,12 +75,11 @@ let connect = function (root) {
     }
     root = head.next
   }
-  return tree
 }
 
 module.exports = [
-  connect_BFS,
-  connect
+  head => connect_BFS(head) || head,
+  head => connect(head) || head
 ]
 
 module.exports.beforeEach = levels => [TreeLinkNode.gen(levels)]

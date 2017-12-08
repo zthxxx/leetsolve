@@ -9,7 +9,7 @@ const ListNode = require('../../libs/ListNode')
  * 然后后半段节点整体入栈
  * 于是就能反转从头插入了
  * @param {ListNode} head
- * @return {void | ListNode} Do not return anything, modify head in-place instead.
+ * @return {void} Do not return anything, modify head in-place instead.
  */
 let reorderList = function (head) {
   if (!head) return
@@ -38,11 +38,9 @@ let reorderList = function (head) {
     p.next = next
     p = p.next.next
   }
-
-  return head
 }
 
-module.exports = reorderList
+module.exports = head => reorderList(head) || head
 
 module.exports.before = list => [ListNode.gen(list)]
 

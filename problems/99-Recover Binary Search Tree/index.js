@@ -22,7 +22,7 @@ const TreeNode = require('../../libs/TreeNode')
  * 同样，遍历完后交换它们
  * 时间复杂度 O(n) 不考虑栈的空间复杂度 O(1)
  * @param {TreeNode} root
- * @return {void | TreeNode} Do not return anything, modify root in-place instead.
+ * @return {void} Do not return anything, modify root in-place instead.
  */
 let recoverTree = function (root) {
   if (!root) return
@@ -45,10 +45,9 @@ let recoverTree = function (root) {
     let [left, right] = mistakes;
     [left.val, right.val] = [right.val, left.val]
   }
-  return root
 }
 
-module.exports = recoverTree
+module.exports = head => recoverTree(head) || head
 
 module.exports.before = levels => [TreeNode.gen(levels)]
 

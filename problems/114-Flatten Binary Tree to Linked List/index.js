@@ -24,13 +24,13 @@ function flattenDFS (root) {
 
 /**
  * @param {TreeNode} root
- * @return {void | TreeNode} Do not return anything, modify root in-place instead.
+ * @return {void} Do not return anything, modify root in-place instead.
  */
 let flatten = function (root) {
-  return flattenDFS(root)
+  flattenDFS(root)
 }
 
-module.exports = flatten
+module.exports = head => flatten(head) || head
 
 module.exports.before = levels => [TreeNode.gen(levels)]
 
