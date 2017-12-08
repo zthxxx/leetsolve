@@ -36,22 +36,17 @@ class TreeNode {
     /**
      * @type {TreeNode[]} nodes
      */
-    let nodes = levels.map(val => {
-      if (val === null) {
-        return null
-      } else {
-        return new this(val)
-      }
-    })
-    let kids = nodes.concat()
-    let root = kids.shift()
-    for (let node of nodes) {
-      if (node !== null) {
-        if (kids.length) node.left = kids.shift()
-        if (kids.length) node.right = kids.shift()
+    let nodes = levels.map(val =>
+      val !== null && new this(val) || null
+    )
+    for (let i = 0, j = 1; j < nodes.length; i++) {
+      let node = nodes[i]
+      if (node) {
+        node.left = nodes[j++]
+        node.right = nodes[j++] || null
       }
     }
-    return root
+    return nodes[0]
   }
 
   /**
@@ -66,11 +61,8 @@ class TreeNode {
       let now = queue.shift()
       if (now) {
         yield now.val
-        valids -= 1
-        if (now.left) valids += 1
-        if (now.right) valids += 1
-        queue.push(now.left)
-        queue.push(now.right)
+        valids += !!now.left + !!now.right - 1
+        queue.push(now.left, now.right)
       } else {
         yield null
       }
