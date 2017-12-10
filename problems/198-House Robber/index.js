@@ -1,6 +1,6 @@
 require('../../libs/runDirect')
 
-let max = Math.max
+const max = Math.max
 
 /**
  * 典型的动态规划
@@ -17,17 +17,20 @@ let max = Math.max
  * 所以第一项最大值只有其本身
  * 所以第二项的最大值就是前两个值中较大的那个
  * dp[0|1] = nums[0|1]
+ * 而所有值的最大项一定是最后两项中最大的那个
+ * 因为最后两者互斥，且代表了前面所有的总和
  * @param {number[]} nums
  * @return {number}
  */
 let rob = function (nums) {
-  if (!nums.length) return 0
-  if (nums.length === 1) return nums[0]
+  let len = nums.length
+  if (!len) return 0
+  if (len === 1) return nums[0]
   let dp = [nums[0], max(nums[0], nums[1])]
-  for (let i = 2; i < nums.length; i++) {
+  for (let i = 2; i < len; i++) {
     dp[i] = max(dp[i - 1], dp[i - 2] + nums[i])
   }
-  return max(...dp)
+  return max(dp[len - 1], dp[len - 2])
 }
 
 module.exports = rob
