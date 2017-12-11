@@ -14,7 +14,9 @@ function findPath (root, node) {
   let right = findPath(root.right, node)
   if (left.length) {
     return left.unshift(root) && left
-  } else if (right.length) return right.unshift(root) && right
+  } else if (right.length) {
+    return right.unshift(root) && right
+  }
   return []
 }
 
