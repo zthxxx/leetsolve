@@ -76,8 +76,7 @@ function prefixFind (root, follow, target, prefix) {
  */
 let pathSum_prefix = function (root, sum) {
   if (!root) return 0
-  let prefix = new Map()
-  prefix.set(0, 1)
+  let prefix = new Map([[0, 1]])
   return prefixFind(root, 0, sum, prefix)
 }
 
