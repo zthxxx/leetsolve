@@ -61,12 +61,12 @@ class Leetsolve {
 
   async distribute (problem, worker) {
     let [solutions, testcases] = this.loadProblem(problem)
-    if (!solutions || !testcases) return this.pool.idle(worker)
+    if (!solutions || !testcases) return this.pool.idle(worker.id)
     if (!Array.isArray(solutions)) solutions = [solutions]
     let problemPath = path.join(this.problemBase, problem)
     let solver = new Solver(problemPath, solutions, testcases, worker, id => this.pool.reset(id), config.timeout)
-    let { status, feedback, errors } = await solver.run()
-    this.pool.idle(worker)
+    let { pid, status, feedback, errors } = await solver.run()
+    this.pool.idle(pid)
 
     this.successes.solvers += status.reduce((last, next) => last + next)
     this.solversTotal += status.length

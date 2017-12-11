@@ -70,8 +70,8 @@ class Pool extends Queue {
     return this.pool.get(id)
   }
 
-  idle ({ id }) {
-    this.put(id)
+  idle (pid) {
+    if (this.pool.has(pid)) this.put(pid)
   }
 }
 

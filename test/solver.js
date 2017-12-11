@@ -121,10 +121,11 @@ class Solver {
         this.worker = this.reboot(this.worker.id)
       }
     }
-    let { feedback, errors } = this
+    let { feedback, errors, worker } = this
     let status = this.caseStatus
       .map(status => status.every(item => item))
-    return { status, feedback, errors }
+    let pid = worker.id
+    return { pid, status, feedback, errors }
   }
 }
 
