@@ -1,6 +1,6 @@
 module.exports = {
   /**
-   * set problems base folder relative this root
+   * set problems base directory relative this root
    */
   problemBase: './problems',
 
@@ -10,9 +10,15 @@ module.exports = {
   casefile: 'testcase.js',
 
   /**
-   * set time limit to run per solution
+   * set time limit to run per solve a test case (ms)
    */
   timeout: 2000,
+
+  /**
+   * how long per a case to be considered long that will
+   * give a warning displayed (ms)
+   */
+  timewarn: 15,
 
   /**
    * whether or not to allow worker output stdio
@@ -30,7 +36,7 @@ module.exports = {
   problemTips: true,
 
   /**
-   * is allow to display feedback tips per testcases
+   * is allow to display feedback tips per test case
    */
   testcaseTips: true
 }

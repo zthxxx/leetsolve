@@ -7,7 +7,7 @@ const {
 const { redBright: red, greenBright: green } = require('chalk')
 
 class Solver {
-  constructor (problemPath, solutions, testcases, worker, reboot, timeout = 2000) {
+  constructor (problemPath, solutions, testcases, worker, reboot, timeout = 2000, timewarn = timeout) {
     this.problemPath = problemPath
     this.problem = path.basename(problemPath)
     this.solutions = solutions
@@ -17,6 +17,7 @@ class Solver {
     this.worker = worker
     this.reboot = reboot
     this.timeout = timeout
+    this.timewarn = timewarn
     this.feedback = solutions.map(solver => ({
       solver: solver.name || '[ANONYMOUS]',
       feedback: []
@@ -59,7 +60,8 @@ class Solver {
     try {
       assert.deepEqual(answer, expect)
       this.caseStatus[solve].push(true)
-      let tip = ['    ', green('√'), 'case', cased + 1, 'tested ok!', green(`(${elapse}ms)`)]
+      let timecolor = elapse > this.timewarn ? red : green
+      let tip = ['    ', green('√'), 'case', cased + 1, 'tested ok!', timecolor(`(${elapse}ms)`)]
       feedback[solve].feedback.push(tip)
     } catch (e) {
       this.caseStatus[solve].push(false)
