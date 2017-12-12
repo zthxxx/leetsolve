@@ -84,6 +84,7 @@ class Solver {
 
   consumer () {
     let { worker, problemPath, solutions, solveIndex, caseIndex } = this
+    if (!worker || !worker.isConnected() || worker.isDead()) throw new Error('worker is dead')
     let solution = solutions[solveIndex]
     let timeout = solution.timeout || solutions.timeout || this.timeout
     let timelimit = () => setTimeout(
@@ -117,17 +118,15 @@ class Solver {
     while (true) {
       try {
         await this.consumer()
-        this.worker.removeAllListeners()
-        break
+        let { feedback, errors, worker } = this
+        worker.removeAllListeners()
+        let status = this.caseStatus
+          .map(status => status.every(item => item))
+        return { status, feedback, errors, pid: worker.id }
       } catch (e) {
         this.worker = this.reboot(this.worker.id)
       }
     }
-    let { feedback, errors, worker } = this
-    let status = this.caseStatus
-      .map(status => status.every(item => item))
-    let pid = worker.id
-    return { pid, status, feedback, errors }
   }
 }
 
