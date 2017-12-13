@@ -1,7 +1,7 @@
 require('../../libs/runDirect')
 const TreeNode = require('../../libs/TreeNode')
 
-let max = Math.max
+const max = Math.max
 
 /**
  * 分解问题
