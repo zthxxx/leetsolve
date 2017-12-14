@@ -28,7 +28,7 @@ class ListNode {
    * 如参数 ([1,2,3,4,5], 3) 表示原本尾节点的下一项，
    * 现在指向第 4 个节点（序号为 3，值为 4）
    * 不传此项或超出序号则不成环
-   * @returns {ListNode}
+   * @return {ListNode}
    */
   static gen (array, trackIndex = null) {
     if (!array || !array.length) return null
