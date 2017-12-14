@@ -64,6 +64,28 @@ class UndirectedGraphNode {
   }
 
   /**
+   * visit graph order by dfs
+   * @param {UndirectedGraphNode} graph
+   * @yield {string[]} - node, neighbors
+   */
+  static* dfs (graph) {
+    let set = new Set([graph])
+    let stack = [graph]
+    while (stack.length) {
+      let node = stack.pop()
+      let edges = node.neighbors.map(v => {
+        if (!set.has(v)) {
+          stack.push(v)
+          set.add(v)
+        }
+        return v.label
+      })
+      yield [node.label, ...edges]
+    }
+  }
+
+
+  /**
    * serialize a graph as a serialized string which to generate
    * @param {UndirectedGraphNode} graph
    * @param {function} visit

@@ -27,7 +27,7 @@ let cloneGraph_2bfs = function (graph) {
       edgeMap.set(node.label, edges)
     }
   }
-  for (let [label, edges] of edgeMap.entries()) {
+  for (let [label, edges] of edgeMap) {
     let node = nodeMap.get(label)
     node.neighbors = edges.map(edge => nodeMap.get(edge))
   }
