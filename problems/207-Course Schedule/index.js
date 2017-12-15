@@ -51,7 +51,8 @@ let canFinish_map = function (numCourses, prerequisites) {
 
 /**
  * 同样的思路做拓扑排序
- * 只是这里完全可以不用 map 结构
+ * 只是这里完全可以不用 map 结构，
+ * （因为写明了节点值从 0 到 n - 1）
  * 更简洁更高效的写法
  * @param {number} numCourses
  * @param {number[][]} prerequisites
