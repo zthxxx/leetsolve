@@ -75,14 +75,14 @@ let calcEquation_floyd = function (equations, values, queries) {
   }
   for (let [k, quot] of map) {
     for (let i of quot.keys()) {
-      for (let [j, val] of map.get(k)) {
+      for (let [j, val] of quot) {
         map.get(i).set(j, map.get(i).get(k) * val)
       }
     }
   }
   return queries.map(([num, den]) => {
-    if (map.has(num) && map.has(den)) return map.get(num).get(den) || -1
-    else return -1
+    if (!map.has(num)) return -1
+    else return map.get(num).get(den) || -1
   })
 }
 
