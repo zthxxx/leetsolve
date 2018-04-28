@@ -44,6 +44,7 @@ class Leetsolve {
     console.log('  Executed', white(`${successes.problems} / ${problems.length}`), 'problems', green('SUCCESS'))
     console.log('  total', white(`${successes.solvers} / ${solversTotal}`), 'solutions', green('ok'))
     console.log('  passing', Date.now() - this.created, 'ms')
+    console.log('\n\n')
   }
 
   showProblemTips (problem, status, feedback) {

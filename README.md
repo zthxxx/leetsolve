@@ -3,7 +3,7 @@
 [![Build Status](https://travis-ci.org/zthxxx/leetsolve.svg?branch=master)](https://travis-ci.org/zthxxx/leetsolve)
 [![Maintainability](https://api.codeclimate.com/v1/badges/72768b68dd90d81e5dad/maintainability)](https://codeclimate.com/github/zthxxx/leetsolve/maintainability)
 [![Node.js](https://img.shields.io/badge/node-8.x%20LTS-blue.svg)](https://nodejs.org/)
-[![LeetCode](https://img.shields.io/badge/LeetCode-tancolat-ff69b4.svg)](https://leetcode.com/tancolat/)
+[![LeetCode](https://img.shields.io/badge/LeetCode-zthxxx-ff69b4.svg)](https://leetcode.com/zthxxxme/)
 
 :cake: simple & light testing frame for LeetCode solutions with JavaScript
 
@@ -161,4 +161,4 @@ ok, come on, try out!
 
 **LeetSolve** © [zthxxx](https://github.com/zthxxx), Released under the **[MIT](./LICENSE)** License.<br>
 
-> Blog [@zthxxx](https://blog.zthxxx.com) · GitHub [@zthxxx](https://github.com/zthxxx) · Twitter [@tancolat](https://twitter.com/tancolat)
+> Blog [@zthxxx](https://blog.zthxxx.com) · GitHub [@zthxxx](https://github.com/zthxxx)
