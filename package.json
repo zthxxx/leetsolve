@@ -1,7 +1,7 @@
 {
   "name": "leetsolve",
   "description": "zthxxx's LeetCode solutions with JavaScript",
-  "version": "1.3.7",
+  "version": "1.4.0",
   "author": {
     "name": "zthxxx",
     "email": "zth_9451@qq.com",
@@ -14,7 +14,8 @@
   "scripts": {
     "lint": "eslint --ext .js,.es6 .",
     "test": "cross-env NODE_ENV=test node --harmony test",
-    "unit": "node test --config=./test/examples/config-unit.js"
+    "unit": "node test --config=./test/examples/config-unit.js",
+    "release": "standard-version"
   },
   "devDependencies": {
     "babel-eslint": "^8.0.2",
@@ -22,7 +23,8 @@
     "chalk": "^2.3.0",
     "cross-env": "^5.1.1",
     "eslint": "^4.8.0",
-    "eslint-config-alloy": "^1.3.1"
+    "eslint-config-alloy": "^1.3.1",
+    "standard-version": "^4.4.0"
   },
   "engines": {
     "node": ">= 6.0.0",
