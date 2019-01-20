@@ -2,6 +2,7 @@
 node_modules/
 dist/
 .idea/
+.vscode/
 *.bak
 *.bak.json
 npm-debug.log*
@@ -10,3 +11,4 @@ yarn-error.log*
 test/unit/coverage
 test/e2e/reports
 selenium-debug.log
+*.lock

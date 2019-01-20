@@ -13,7 +13,7 @@
   },
   "scripts": {
     "lint": "eslint --ext .js,.es6 .",
-    "test": "cross-env NODE_ENV=test node --harmony test",
+    "test": "cross-env NODE_ENV=test node test",
     "unit": "node test --config=./test/examples/config-unit.js",
     "release": "standard-version"
   },
@@ -27,8 +27,8 @@
     "standard-version": "^4.4.0"
   },
   "engines": {
-    "node": ">= 6.0.0",
-    "npm": ">= 3.0.0"
+    "node": ">= 10.0.0",
+    "npm": ">= 6.0.0"
   },
   "license": "MIT"
 }
