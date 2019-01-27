@@ -6,7 +6,7 @@ const ListNode = require('../../libs/ListNode')
  * @param {ListNode} head
  * @return {ListNode}
  */
-let solution = function (head) {
+const solution = function (head) {
   if (!head) return null
   return head
 }
