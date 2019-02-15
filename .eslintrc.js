@@ -11,15 +11,20 @@ module.exports = {
     ecmaFeatures: {
       experimentalObjectRestSpread: true,
       jsx: true,
-      modules: true
-    }
+      modules: true,
+    },
   },
   rules: {
     /**
      * this ref to editorconfig
      */
+
+    //https://eslint.org/docs/rules/comma-dangle
+    'comma-dangle': ['error', 'only-multiline'],
+
     // https://eslint.org/docs/rules/eol-last
     'eol-last': ['error', 'always'],
+
     // indent bug in <script> https://github.com/vuejs/eslint-plugin-vue/issues/118
     'indent': 'off',
     'indent-legacy': ['error', 2],
@@ -55,8 +60,8 @@ module.exports = {
       'always',
       {
         arraysInObjects: true,
-        objectsInObjects: true
-      }
+        objectsInObjects: true,
+      },
     ],
     'semi': ['error', 'never'],
     // https://eslint.org/docs/rules/space-before-function-paren
@@ -65,10 +70,10 @@ module.exports = {
       {
         anonymous: 'always',
         named: 'always',
-        asyncArrow: 'always'
-      }
+        asyncArrow: 'always',
+      },
     ],
     // https://eslint.org/docs/rules/no-confusing-arrow
-    'no-confusing-arrow': ['error', { 'allowParens': true }]
-  }
-};
+    'no-confusing-arrow': 'off',
+  },
+}
