@@ -10,7 +10,7 @@ const ListNode = require('../../libs/ListNode')
  * 所以需要输入头节点的前一个节点
  * @param {ListNode} prehead - 待排序部分的 head 节点的前一个节点
  * @param {ListNode} end - 待排序部分的末尾节点
- * @return {[ListNode, ListNode]}
+ * @return {ListNode} pivot
  */
 function partition (prehead, end) {
   let head = prehead.next
@@ -29,10 +29,10 @@ function partition (prehead, end) {
     }
     head = head.next
   }
-  lastR.next = head
+  lastR.next = end
   lastL.next = right.next
   prehead.next = left.next
-  return [lastL, lastR]
+  return lastL.next
 }
 
 /**
@@ -48,9 +48,9 @@ function quickSort (prehead, end) {
     prehead.next.next === end) {
     return
   }
-  let [lastL, lastR] = partition(prehead, end)
-  quickSort(lastL.next, lastR.next)
-  quickSort(prehead, lastL.next)
+  let pivot = partition(prehead, end)
+  quickSort(prehead, pivot)
+  quickSort(pivot, end)
 }
 
 /**
