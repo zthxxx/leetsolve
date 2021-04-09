@@ -1,0 +1,38 @@
+{
+  "name": "leetsolve",
+  "version": "0.0.0",
+  "description": "LeetCode solutions with TypeScript",
+  "private": true,
+  "sideEffects": false,
+  "workspaces": [
+    "packages/*"
+  ],
+  "keywords": [
+    "leetcode"
+  ],
+  "license": "MIT",
+  "author": "zthxxx",
+  "repository": "zthxxx/leetsolve",
+  "homepage": "https://github.com/zthxxx/leetsolve",
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org"
+  },
+  "files": [],
+  "scripts": {
+    "test": "jest"
+  },
+  "devDependencies": {
+    "@changesets/cli": "2.18.1",
+    "@leetsolve/kit": "workspace:0.0.0",
+    "@swc-node/jest": "1.4.2",
+    "@types/jest": "27.0.3",
+    "@types/node": "16.11.13",
+    "jest": "27.4.5",
+    "rimraf": "3.0.2",
+    "ts-node": "10.4.0",
+    "typescript": "4.5.4"
+  }
+}

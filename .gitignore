@@ -1,0 +1,34 @@
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+.DS_Store
+.idea
+.vscode
+
+# dependencies
+node_modules
+
+
+# production
+dist
+build
+lib
+es
+/site
+
+# log or cache
+/.npm-cache
+npm-debug.log*
+*.swp
+*.zip
+*.log
+*.bak
+*.tsbuildinfo
+.logs/
+
+# testing
+/coverage
+
+# jest report
+report.*.json
+
+/.log-horizon.ts

@@ -1,0 +1,17 @@
+{
+  "name": "@leetsolve/problems",
+  "version": "0.0.0",
+  "description": "",
+  "private": true,
+  "keywords": [
+    "leetcode"
+  ],
+  "license": "MIT",
+  "author": "zthxxx",
+  "repository": "https://github.com/zthxxx/leetsolve/tree/master/packages/problems",
+  "sideEffects": false,
+  "files": [],
+  "dependencies": {
+    "@leetsolve/kit": "workspace:0.0.0"
+  }
+}

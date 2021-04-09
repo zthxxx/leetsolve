@@ -1,0 +1,8 @@
+{
+  "extends": "@leetsolve/kit/tsconfig.base.json",
+  // https://www.typescriptlang.org/docs/handbook/project-references.html#what-is-a-project-reference
+  "references": [
+    { "path": "./packages/kit" },
+    { "path": "./packages/problems" },
+  ],
+}
