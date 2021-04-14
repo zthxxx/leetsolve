@@ -6,8 +6,8 @@
     "outDir": ".",
     "paths": {
     },
-    "references": [
-      { "path": "../kit" },
-    ]
   },
+  "references": [
+    { "path": "../kit" },
+  ],
 }
