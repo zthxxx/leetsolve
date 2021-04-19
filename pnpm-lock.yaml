@@ -5,6 +5,7 @@ importers:
   .:
     specifiers:
       '@changesets/cli': 2.18.1
+      '@leetsolve/create': workspace:0.0.0
       '@leetsolve/kit': workspace:0.0.0
       '@swc-node/jest': 1.4.2
       '@types/jest': 27.0.3
@@ -15,6 +16,7 @@ importers:
       typescript: 4.5.4
     devDependencies:
       '@changesets/cli': 2.18.1
+      '@leetsolve/create': link:packages/create
       '@leetsolve/kit': link:packages/kit
       '@swc-node/jest': 1.4.2
       '@types/jest': 27.0.3
