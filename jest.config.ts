@@ -15,7 +15,7 @@ const config: Config.InitialOptions = {
     '/es/',
   ],
   transform: {
-    '^.+\\.ts$': '@swc-node/jest',
+    '^.+\\.ts$': 'ts-jest',
   },
   collectCoverage: true,
   collectCoverageFrom: [
@@ -27,6 +27,12 @@ const config: Config.InitialOptions = {
     '!**/lib/**',
     '!**/es/**',
   ],
+  globals: {
+    'ts-jest': {
+      diagnostics: false,
+      isolatedModules: true,
+    },
+  },
 
   // https://kulshekhar.github.io/ts-jest/docs/getting-started/paths-mapping
   moduleNameMapper: {

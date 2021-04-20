@@ -2,7 +2,11 @@
   "name": "@leetsolve/kit",
   "version": "0.0.0",
   "description": "",
-  "private": true,
+  "private": false,
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org"
+  },
   "keywords": [
     "leetcode"
   ],

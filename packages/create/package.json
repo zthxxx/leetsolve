@@ -2,7 +2,7 @@
   "name": "@leetsolve/create",
   "version": "0.0.0",
   "description": "",
-  "private": false,
+  "private": true,
   "keywords": [
     "leetcode"
   ],
