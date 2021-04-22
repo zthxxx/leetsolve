@@ -10,28 +10,36 @@ export interface Hook<Input, Expect> {
   output?: (answer: any) => Expect,
 }
 
-export const defineTest = <
-  Solution extends Function,
+
+export function defineTest<
   Input extends Array<any>,
-  Expect,
+  Expect extends any,
+  CaseInput extends Array<any>,
+  CaseExpect extends any,
+  Solution extends (...input: Input) => Expect,
 >(
   solution: Solution | Solution[],
-  testcases: Cases<Input, Expect>,
-  hook?: Hook<Input, Expect>,
-) => {
-  const solutions = Array.isArray(solution) ? solution : [solution]
+  testcases: Cases<CaseInput, CaseExpect>,
+  hook?: {
+    input?: (...input: CaseInput) => Input;
+    output?: (answer: Expect) => CaseExpect;
+  },
+): void {
+  const solutions: Solution[] = Array.isArray(solution) ? solution : [solution]
 
   solutions.forEach((solution) => {
     const { name } = solution
     testcases.forEach((testcase, caseIndex) => {
-      it(`[${name}] case ${caseIndex + 1}`, async () => {
-        const input = hook?.input
+      it(`[${name}] case ${caseIndex + 1}`, () => {
+        const input: Input = hook?.input
           ? hook.input(...testcase.input)
-          : testcase.input
-        const answer = await solution(...input)
-        const result = hook?.output
+          : testcase.input as any as Input
+
+        const answer = solution(...input)
+
+        const result: CaseExpect = hook?.output
           ? hook.output(answer)
-          : answer
+          : answer as any as CaseExpect
         expect(result).toEqual(testcase.expect)
       })
     })

@@ -1,4 +1,4 @@
-import { defineTest, type Cases } from '@leetsolve/kit'
+import { defineTest, Cases } from '@leetsolve/kit'
 import solution from '.'
 
 

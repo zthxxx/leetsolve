@@ -17,7 +17,7 @@ export class TreeNode {
 /**
  * deserialize to binary tree from level-order values
  */
-export const genTree = (levels: number[]): TreeNode | null => {
+export const genTreeByLevels = (levels: (number | null)[]): TreeNode | null => {
   if (!levels || !levels.length) return null
   const nodes: (TreeNode | null)[] = levels.map(val =>
     val !== null && new TreeNode(val) || null
@@ -33,15 +33,13 @@ export const genTree = (levels: number[]): TreeNode | null => {
   return nodes[0]
 }
 
-export function *treeLevelOrder(node: TreeNode): Generator<number | null> {
+export function *treeLevelOrder(node: TreeNode): Generator<TreeNode | null> {
   const queue: (TreeNode | null)[] = [node]
   while (queue.length) {
-    let now = queue.shift()
-    if (now) {
-      yield now.val
-      queue.push(now.left, now.right)
-    } else {
-      yield null
+    let node: TreeNode | null = queue.shift()!
+    yield node
+    if (node) {
+      queue.push(node.left, node.right)
     }
   }
 }

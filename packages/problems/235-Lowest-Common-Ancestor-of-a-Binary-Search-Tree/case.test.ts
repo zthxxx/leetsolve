@@ -3,7 +3,7 @@ import {
   Cases,
   Hook,
   TreeNode,
-  genTree,
+  genTreeByLevels,
   findTreeNode,
 } from '@leetsolve/kit'
 import solution from '.'
@@ -49,7 +49,7 @@ const testcases: Cases<[(number | null)[], number, number], number | null> = [
 
 const hook: Hook<[TreeNode | null, TreeNode | null, TreeNode | null], number | null> = {
   input: (levelOrder: (number | null)[], pVal: number, qVal: number) => {
-    const root = genTree(levelOrder)
+    const root = genTreeByLevels(levelOrder)!
     const pNode = findTreeNode(root, pVal)
     const qNode = findTreeNode(root, qVal)
     return [root, pNode, qNode]

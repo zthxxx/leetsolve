@@ -44,7 +44,7 @@
  */
 
 
-function twoSum(nums: number[], target: number): number[] {
+function twoSum(nums: number[], target: number): [number, number] {
   for (let [index, num] of nums.entries()) {
     let other = target - num
     let otherIndex = nums.indexOf(other)
@@ -52,7 +52,7 @@ function twoSum(nums: number[], target: number): number[] {
       return [index, otherIndex]
     }
   }
-  return []
+  return [] as never
 }
 
 export default twoSum
