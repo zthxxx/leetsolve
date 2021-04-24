@@ -6,6 +6,7 @@ import {
   genTreeByLevels,
   findTreeNode,
 } from '@leetsolve/kit'
+
 import solution from '.'
 
 const testcases: Cases<[(number | null)[], number, number], number | null> = [

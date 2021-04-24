@@ -30,7 +30,7 @@
     "strictFunctionTypes": false,
     "noUnusedLocals": true,
     "skipLibCheck": true,
-    "sourceMap": false,
+    "sourceMap": true,
     "jsx": "react",
     "allowJs": true,
     // https://www.typescriptlang.org/tsconfig#composite
