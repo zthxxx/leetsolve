@@ -1,5 +1,5 @@
 {
-  "extends": "./tsconfig.base.json",
+  "extends": "@leetsolve/create/tsconfig.base.json",
   "compilerOptions": {
     "rootDir": "src",
     "baseUrl": ".",
@@ -8,4 +8,7 @@
       "@leetsolve/kit": ["src"],
     },
   },
+  "include": [
+    "src",
+  ],
 }

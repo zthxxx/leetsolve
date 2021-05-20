@@ -26,15 +26,13 @@
     "test": "jest"
   },
   "devDependencies": {
-    "@changesets/cli": "2.18.1",
+    "@changesets/cli": "2.20.0",
     "@leetsolve/create": "workspace:0.0.0",
-    "@leetsolve/kit": "workspace:0.0.0",
     "@types/jest": "27.0.3",
     "@types/node": "16.11.13",
     "jest": "27.4.5",
     "rimraf": "3.0.2",
     "ts-jest": "27.1.2",
-    "ts-node": "10.4.0",
     "typescript": "4.5.4"
   }
 }

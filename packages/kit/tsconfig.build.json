@@ -1,18 +1,14 @@
 {
-  "extends": "./tsconfig.json",
+  "extends": "@leetsolve/create/tsconfig.build.json",
   "compilerOptions": {
-    "target": "es2017",
-    "noEmit": false,
+    "rootDir": "src",
+    "baseUrl": ".",
+    "outDir": "es",
+    "paths": {
+      "@leetsolve/kit": ["src"],
+    },
   },
   "include": [
     "src",
-  ],
-  "exclude": [
-    "node_modules",
-    "coverage",
-    "dist",
-    "lib",
-    "es",
-    "**/*.{spec,test,mock}.ts",
   ],
 }

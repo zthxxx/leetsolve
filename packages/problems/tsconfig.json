@@ -1,12 +1,16 @@
 {
-  "extends": "@leetsolve/kit/tsconfig.base.json",
+  "extends": "@leetsolve/create/tsconfig.base.json",
   "compilerOptions": {
     "rootDir": ".",
     "baseUrl": ".",
     "outDir": ".",
     "paths": {
+      "@leetsolve/problems": ["src"]
     },
   },
+  "include": [
+    "src",
+  ],
   "references": [
     { "path": "../kit" },
   ],

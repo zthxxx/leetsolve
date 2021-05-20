@@ -9,6 +9,7 @@ const config: Config.InitialOptions = {
   testMatch: ['<rootDir>/packages/**/*.test.ts'],
   testPathIgnorePatterns: [
     '/node_modules/',
+    '/templates/',
     '/coverage/',
     '/dist/',
     '/lib/',

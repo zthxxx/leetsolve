@@ -31,4 +31,4 @@ npm-debug.log*
 # jest report
 report.*.json
 
-/.log-horizon.ts
+.playground.ts

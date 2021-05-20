@@ -2,7 +2,7 @@ import type { ListNode } from '@leetsolve/kit'
 
 /**
  * 142. Linked List Cycle II
- * https://leetcode.com/problems/linked-list-cycle-ii
+ * [Medium] https://leetcode.com/problems/linked-list-cycle-ii
  *
  *  Given the head of a linked list, return the node where the cycle begins. If there is no cycle, return null.
  *

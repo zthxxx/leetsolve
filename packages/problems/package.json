@@ -13,5 +13,8 @@
   "files": [],
   "dependencies": {
     "@leetsolve/kit": "workspace:0.0.0"
+  },
+  "devDependencies": {
+    "@leetsolve/create": "workspace:0.0.0"
   }
 }
