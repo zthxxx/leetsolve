@@ -2,6 +2,11 @@
 import path from 'path'
 import { promises as fs, existsSync } from 'fs'
 import glob from 'fast-glob'
+import {
+  resolveConfig,
+  format,
+  type Options as PrettierOptions,
+} from 'prettier'
 
 
 /** template variables context */
@@ -41,6 +46,7 @@ export const appleTemplateProject = async ({ sourceDir, targetDir, context }: {
 }) => {
   // path relative from templateProject
   const files = await glob(['**/*', '**/.*'], { cwd: sourceDir })
+  const prettierOptions: PrettierOptions | undefined = await resolveConfig(process.cwd()) ?? undefined
 
   for (const file of files) {
     const sourceFilePath = path.join(sourceDir, file)
@@ -48,12 +54,25 @@ export const appleTemplateProject = async ({ sourceDir, targetDir, context }: {
     const sourceFile = await fs.readFile(sourceFilePath, { encoding: 'utf-8' })
 
     const targetFile = compileTemplateText(sourceFile, context)
+    const formatted = format(
+      targetFile,
+      {
+        ...prettierOptions,
+        filepath: targetFilePath,
+      },
+    )
 
     const targetFileDir = path.dirname(targetFilePath)
     if (!existsSync(targetFileDir)) {
       await fs.mkdir(targetFileDir, { recursive: true })
     }
 
-    await fs.writeFile(targetFilePath, targetFile, { flag: 'w', encoding: 'utf-8' })
+    await fs.writeFile(
+      targetFilePath,
+      formatted,
+      { flag: 'w', encoding: 'utf-8' },
+    )
   }
+
+
 }

@@ -2,6 +2,8 @@
  * {{questionTitle}}
  * [{{difficulty}}] {{questionURL}}
  *
+ * --------------------------------
+ *
 {{description}}
  */
 
