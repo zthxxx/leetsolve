@@ -11,6 +11,11 @@ import {
 
 export type { QuestionData } from './query'
 
+export const genQuestionURL = (
+  titleSlug: string,
+  host: string = 'https://leetcode.com/problems',
+) => `${host}/${titleSlug}`
+
 export const getQuesionDataById = async (quesionId: string, spinner?: Ora): Promise<QuestionData> => {
   spinner?.start('Loading quesions list ...')
   const questionList: QuestionListItem[] = await fetchQuestionList()
@@ -22,9 +27,15 @@ export const getQuesionDataById = async (quesionId: string, spinner?: Ora): Prom
   }
 
   const { title, titleSlug } = questionItem
-  spinner?.start(`Loading detail of quesion (${quesionId}. ${title}) ...`)
+  const questionURL = genQuestionURL(titleSlug)
+
+  spinner?.start(`Loading detail of quesion (${quesionId}. ${title}) ...
+    ${chalk.gray(questionURL)}\
+  `)
   const questionData: QuestionData = await fetchQuestionData(titleSlug)
-  spinner?.succeed(`Load quesion detail ${chalk.yellowBright(`(${quesionId}. ${title})`)}`)
+  spinner?.succeed(`Load quesion detail ${chalk.yellowBright(`(${quesionId}. ${title})`)}
+    ${chalk.gray(questionURL)}\
+  `)
 
   return questionData
 }

@@ -9,6 +9,8 @@ const testcases: Cases<[number[]], null> = [
 {{testcases}}
 ]
 
-describe('{{questionTitle}} - ({{questionURL}})', () => {
-  defineTest(solution, testcases)
-})
+// prettier-ignore
+describe(
+  '{{questionTitle}} - ({{questionURL}})',
+  () => defineTest(solution, testcases),
+)

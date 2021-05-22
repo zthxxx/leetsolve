@@ -23,10 +23,11 @@ export const prefixLines = (prefix: string, text: string): string =>
 export const defaultSnippet = `const solution = () => {}`
 
 export const exportNameDetectRegexps: RegExp[] = [
-  /function +(?<name>\w+) ?\(/,
-  /const +(?<name>\w+) ?=/,
-  /let +(?<name>\w+) ?=/,
-  /var +(?<name>\w+) ?=/,
+  /^function +(?<name>\w+) *\(/m,
+  /^class +(?<name>\w+) *{/m,
+  /^const +(?<name>\w+) *=/m,
+  /^let +(?<name>\w+) *=/m,
+  /^var +(?<name>\w+) *=/m,
 ]
 
 export const makeCodeSnippet = (functionCode: string): string => {

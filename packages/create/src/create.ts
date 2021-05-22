@@ -1,7 +1,10 @@
 import path from 'path'
 import chalk from 'chalk'
 import type { Ora } from 'ora'
-import type { QuestionData } from './leetcode'
+import {
+  type QuestionData,
+  genQuestionURL,
+} from './leetcode'
 import {
   defaultSnippet,
   makeCodeSnippet,
@@ -13,6 +16,7 @@ import {
   type TemplateContext,
   getTemplateDir,
   appleTemplateProject,
+  findTopicTemplate,
 } from './template'
 
 
@@ -29,7 +33,7 @@ export const makeTemplateContext = async (question: QuestionData): Promise<Templ
   } = question
 
   const questionTitle = `${id}. ${title}`
-  const questionURL = `https://leetcode.com/problems/${titleSlug}`
+  const questionURL = genQuestionURL(titleSlug)
 
   const description = prefixLines(
     ' * ',
@@ -58,14 +62,17 @@ export const createSolution = async (question: QuestionData, spinner?: Ora) => {
   const {
     id,
     title,
+    topicTags,
   } = question
 
   const solutionDir = `${id}-${title.trim().replace(/ /g, '-')}`
+  const topics = topicTags.map(({ name }) => name)
 
   // path relative from cwd
   const solutionPath = path.join('packages', 'problems', solutionDir)
   // absolute path
-  const templateProject = getTemplateDir('default')
+  const tempate = findTopicTemplate(topics)
+  const templateProject = getTemplateDir(tempate)
 
   const templateContext = await makeTemplateContext(question)
 

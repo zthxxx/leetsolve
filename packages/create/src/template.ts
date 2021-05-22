@@ -19,6 +19,21 @@ export interface TemplateContext {
   testcases: string;
 }
 
+
+export const topicTemplateMap: { [key: string]: string } = {
+  'Linked List': 'linked-list',
+  'Binary Tree': 'binary-tree',
+}
+
+export const findTopicTemplate = (topics: string[]): string => {
+  for (const topic of topics) {
+    if (topicTemplateMap[topic]) {
+      return topicTemplateMap[topic]
+    }
+  }
+  return 'default'
+}
+
 export const getTemplateDir = (mode: string) =>
   path.join(__dirname, '..', 'templates', mode)
 

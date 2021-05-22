@@ -49,6 +49,8 @@ const hook: Hook<[ListNode], number | null> = {
   output: (answer: ListNode | null) => answer?.val ?? null,
 }
 
-describe(`142. Linked List Cycle II (https://leetcode.com/problems/linked-list-cycle-ii)`, () => {
-  defineTest(solution, testcases, hook)
-})
+// prettier-ignore
+describe(
+  `142. Linked List Cycle II (https://leetcode.com/problems/linked-list-cycle-ii)`,
+  () => defineTest(solution, testcases, hook),
+)

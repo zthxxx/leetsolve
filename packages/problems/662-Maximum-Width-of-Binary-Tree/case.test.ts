@@ -68,9 +68,8 @@ const hook: Hook<[TreeNode | null], number> = {
   input: (levelOrder: (number | null)[]) => [genTreeByLevels(levelOrder)],
 }
 
+// prettier-ignore
 describe(
   `662. Maximum Width of Binary Tree (https://leetcode.com/problems/maximum-width-of-binary-tree)`,
-  () => {
-    defineTest(solution, testcases, hook)
-  },
+  () => defineTest(solution, testcases, hook),
 )

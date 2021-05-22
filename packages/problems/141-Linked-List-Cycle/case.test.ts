@@ -55,6 +55,8 @@ const hook: Hook<[ListNode], boolean> = {
   },
 }
 
-describe(`141. Linked List Cycle (https://leetcode.com/problems/linked-list-cycle)`, () => {
-  defineTest(solution, testcases, hook)
-})
+// prettier-ignore
+describe(
+  `141. Linked List Cycle (https://leetcode.com/problems/linked-list-cycle)`,
+  () => defineTest(solution, testcases, hook),
+)

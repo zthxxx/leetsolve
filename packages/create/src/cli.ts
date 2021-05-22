@@ -1,11 +1,11 @@
 import cac from 'cac'
 import chalk from 'chalk'
-import ora from 'ora'
 import {
   type QuestionData,
   getQuesionDataById,
 } from './leetcode'
 import { createSolution } from './create'
+import { spinner } from './logger'
 
 
 const cli = cac('@leetsolve/create')
@@ -27,7 +27,7 @@ cli
         need specify the question ID, like \`npx @leetsolve/create --id 1\`
       `))
     }
-    const spinner = ora()
+
     const question: QuestionData = await getQuesionDataById(String(questionId), spinner)
     await createSolution(question, spinner)
     spinner.stop()

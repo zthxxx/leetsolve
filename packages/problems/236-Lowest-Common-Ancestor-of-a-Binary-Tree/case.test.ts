@@ -58,6 +58,8 @@ const hook: Hook<[TreeNode | null, TreeNode | null, TreeNode | null], number | n
   output: (node: TreeNode | null) => node?.val ?? null,
 }
 
-describe(`236. Lowest Common Ancestor of a Binary Tree (https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-tree)`, () => {
-  defineTest(solution, testcases, hook)
-})
+// prettier-ignore
+describe(
+  `236. Lowest Common Ancestor of a Binary Tree (https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-tree)`,
+  () => defineTest(solution, testcases, hook),
+)

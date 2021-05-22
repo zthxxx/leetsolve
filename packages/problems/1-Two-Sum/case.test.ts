@@ -26,6 +26,8 @@ const testcases: Cases<[number[], number], [number, number]> = [
   },
 ]
 
-describe('1. Two Sum - (https://leetcode.com/problems/two-sum)', () => {
-  defineTest(solution, testcases)
-})
+// prettier-ignore
+describe(
+  '1. Two Sum - (https://leetcode.com/problems/two-sum)',
+  () => defineTest(solution, testcases),
+)
