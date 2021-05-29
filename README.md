@@ -14,7 +14,13 @@ using `jest` and `pnpm` + `changesets`
   `pnpx @leetcode/create --id <problem-id>`
 
   or just `pnpx create --id <problem-id>`
+5. write testcases in `case.test.ts`
 4. write up your solution code, and run unit test via `jest`
+
+
+## Archived
+
+The legacy and archived solution see in [archived branch](https://github.com/zthxxx/leetsolve/tree/archived).
 
 ## License
 
